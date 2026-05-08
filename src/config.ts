@@ -1,10 +1,17 @@
 import dotenv from "dotenv";
+import { env } from "node:process";
 
 dotenv.config();
 
 export default {
-  port: process.env.PORT,
-
+  app: {
+    env: env.NODE_ENV,
+    port: process.env.PORT,
+    corsOrigin:
+      env.NODE_ENV === "production"
+        ? process.env.CORS_ORIGIN_PROD
+        : process.env.CORS_ORIGIN_LOCAL,
+  },
   whatsapp: {
     token: process.env.WHATSAPP_TOKEN,
     phoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID,
