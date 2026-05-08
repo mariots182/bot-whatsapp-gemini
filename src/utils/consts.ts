@@ -1,3 +1,8 @@
+export const ENV = {
+  PRODUCTION: "PRODUCTION",
+  DEVELOPMENT: "DEVELOPMENT",
+};
+
 export const WHATSAPP = {
   SUBSCRIBE: "subscribe",
   MESSAGING_PRODUCT: "whatsapp",
