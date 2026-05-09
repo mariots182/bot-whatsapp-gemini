@@ -1,4 +1,5 @@
 import config from "../../config";
+import logger from "../logger";
 
 const { geocodingURL, apiKey } = config.google.geolocation;
 
@@ -23,7 +24,7 @@ export async function handleGeocodingAddress(location: {
       );
     }
 
-    console.log(
+    logger.info(
       "[Utils][handleGeocodingAddress] Direcciones cercana obtenida:",
       nearbyAddresses[0],
     );
@@ -32,7 +33,7 @@ export async function handleGeocodingAddress(location: {
 
     return messageAddresses;
   } catch (error) {
-    console.error(
+    logger.error(
       "[Utils][handleGeocodingAddress] Error al procesar la ubicación:",
       error,
     );

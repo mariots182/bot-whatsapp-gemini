@@ -3,6 +3,7 @@ import cors from "cors";
 import routes from "./routes/routes";
 import config from "./config";
 import { HTTP } from "./utils/consts";
+import logger from "./utils/logger";
 
 const { corsOrigin, port } = config.app;
 const {
@@ -24,5 +25,5 @@ app.use(
 app.use(routes);
 
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  logger.info(`Server is running on port ${port}`);
 });

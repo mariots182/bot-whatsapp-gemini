@@ -1,4 +1,5 @@
 import { WhatsAppMessageDetails } from "../interfaces";
+import logger from "../logger";
 
 export function extractMessageDetails(body: any): WhatsAppMessageDetails {
   const entry = body?.entry?.[0];
@@ -68,7 +69,7 @@ function isValidMessage(messageDetails: WhatsAppMessageDetails): boolean {
     (messageDetails.statuses !== undefined &&
       messageDetails.statuses.status === "delivered")
   ) {
-    console.warn(
+    logger.warn(
       "[messagesUtils][isValidMessage] Message already sent or delivered",
     );
     return false;
@@ -78,17 +79,17 @@ function isValidMessage(messageDetails: WhatsAppMessageDetails): boolean {
   const validSpecialTypes = ["interactive", "location", "list_reply"];
 
   if (invalidTypes.includes(type)) {
-    console.warn(`[messagesUtils][isValidMessage] Is a ${type} message`);
+    logger.warn(`[messagesUtils][isValidMessage] Is a ${type} message`);
     return false;
   }
 
   if (validSpecialTypes.includes(type)) {
-    console.warn(`[messagesUtils][isValidMessage] Is a ${type} message`);
+    logger.warn(`[messagesUtils][isValidMessage] Is a ${type} message`);
     return true;
   }
 
   if (!from || !text || !displayPhoneNumber) {
-    console.warn("[messagesUtils][isValidMessage] Incomplete payload received");
+    logger.warn("[messagesUtils][isValidMessage] Incomplete payload received");
     return false;
   }
 

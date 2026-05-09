@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { handleGeocodingAddress } from "../utils/messages/messageGeocoding";
 import { extractMessageDetails } from "../utils/messages/messageDetails";
+import logger from "../utils/logger";
 // import { sendMessage } from "../utils/whatsapp";
 
 export const parseMessageMiddleware = async (
@@ -8,7 +9,7 @@ export const parseMessageMiddleware = async (
   res: Response,
   next: NextFunction,
 ) => {
-  console.log("[ParseMessageMiddleware] INICIANDO parseMessageMiddleware");
+  logger.info("[ParseMessageMiddleware] INICIANDO parseMessageMiddleware");
   const messageDetails = extractMessageDetails(req.body);
   const {
     type,
@@ -20,7 +21,7 @@ export const parseMessageMiddleware = async (
     displayPhoneNumber,
   } = messageDetails;
 
-  console.log("[ParseMessageMiddleware] Detalles del mensaje:", messageDetails);
+  logger.info("[ParseMessageMiddleware] Detalles del mensaje:", messageDetails);
 
   if (!messageDetails.isValid) {
     return res.sendStatus(200);
@@ -39,7 +40,7 @@ export const parseMessageMiddleware = async (
 
     case "location":
       if (!messageDetails.location) {
-        console.warn(
+        logger.warn(
           "[ParseMiddleware] No se pudo extraer la ubicación del mensaje.",
         );
         return res.sendStatus(200);
@@ -47,7 +48,7 @@ export const parseMessageMiddleware = async (
 
       const { location } = messageDetails;
 
-      console.log("[ParseMiddleware] Ubicación recibida:", location);
+      logger.info("[ParseMiddleware] Ubicación recibida:", location);
 
       const address = await handleGeocodingAddress(location);
 
@@ -59,23 +60,17 @@ export const parseMessageMiddleware = async (
     case "image":
     case "audio":
     case "document":
-      // await sendMessage({
-      //   to: from,
-      //   phoneNumberId: phoneNumberId,
-      //   message:
-      //     "Gracias, pero por ahora no puedo procesar este tipo de archivos. ¿Puedo ayudarte con otra cosa?",
-      // });
       return res.sendStatus(200);
 
     default:
-      console.warn(
+      logger.warn(
         `[ParseMiddleware] Tipo de mensaje no manejado: ${type}. Ignorando.`,
       );
       return res.sendStatus(200);
   }
 
   if (!text) {
-    console.log(
+    logger.info(
       "[ParseMiddleware] No se pudo extraer texto procesable del mensaje. Ignorando.",
     );
     return res.sendStatus(200);
@@ -89,6 +84,10 @@ export const parseMessageMiddleware = async (
     messageDetails,
     type,
   };
+
+  logger.info(
+    `[ParseMessageMiddleware] Mensaje procesado y agregado a la solicitud: ${text}`,
+  );
 
   next();
 };

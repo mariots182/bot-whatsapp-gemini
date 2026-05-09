@@ -1,6 +1,7 @@
 import config from "../config";
 import { HTTP, WHATSAPP } from "../utils/consts";
 import { WhatsAppMessage } from "../utils/interfaces";
+import logger from "../utils/logger";
 
 const { apiUrl, apiVersion, token } = config.whatsapp;
 
@@ -28,7 +29,7 @@ class WhatsappService {
       headers,
       body,
     }).catch((error) => {
-      console.error(
+      logger.error(
         `[whatsapp][sendMessage] Error al enviar el mensaje: ${error}`,
       );
       throw error;
@@ -37,14 +38,14 @@ class WhatsappService {
     if (!response.ok) {
       const error = await response.text();
 
-      console.error(
+      logger.error(
         `[WhatsappService][sendMessage] Error al enviar el mensaje: ${response.status} - ${error}`,
       );
 
       throw error;
     }
 
-    console.log(
+    logger.info(
       `[WhatsappService][sendMessage] Mensaje enviado exitosamente a ${to} con respuesta: ${JSON.stringify(await response.json())}`,
     );
 

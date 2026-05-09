@@ -2,8 +2,6 @@ import { Request, response, Response } from "express";
 import config from "../config";
 import { WHATSAPP } from "../utils/consts";
 import BotService from "../services/bot.service";
-import WhatsappService from "../services/whatsapp.service";
-import GeminiService from "../services/gemini.service";
 import logger from "../utils/logger";
 
 export const webhookVerifyController = (req: Request, res: Response) => {
@@ -19,7 +17,7 @@ export const webhookVerifyController = (req: Request, res: Response) => {
 
   if (mode && token) {
     if (mode === WHATSAPP.SUBSCRIBE && token === TOKEN) {
-      console.log("Webhook verified successfully");
+      logger.info("Webhook verified successfully");
 
       res.status(200).send(challenge);
     } else {
@@ -29,7 +27,7 @@ export const webhookVerifyController = (req: Request, res: Response) => {
 };
 
 export const webhookMessageController = async (req: Request, res: Response) => {
-  console.log("Received webhook message:", req.body);
+  logger.info("Received webhook message:", req.body);
   try {
     const botService = new BotService();
 
@@ -43,7 +41,7 @@ export const webhookMessageController = async (req: Request, res: Response) => {
 
     await botService.processUserMessage(messageDetails);
   } catch (error) {
-    console.error("[BotController] Error en el mensaje:", error);
+    logger.error("[BotController] Error en el mensaje:", error);
   }
 };
 
@@ -51,7 +49,7 @@ export const webhookMessageTestController = async (
   req: Request,
   res: Response,
 ) => {
-  console.log("Received webhook test message:", req.body);
+  logger.info("Received webhook test message:", req.body);
 
   try {
     const botService = new BotService();
@@ -64,6 +62,6 @@ export const webhookMessageTestController = async (
 
     await botService.processUserMessage(messageDetails);
   } catch (error) {
-    console.error("[BotController] Error en el mensaje:", error);
+    logger.error("[BotController] Error en el mensaje:", error);
   }
 };
