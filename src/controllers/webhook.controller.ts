@@ -4,6 +4,7 @@ import { WHATSAPP } from "../utils/consts";
 import BotService from "../services/bot.service";
 import WhatsappService from "../services/whatsapp.service";
 import GeminiService from "../services/gemini.service";
+import logger from "../utils/logger";
 
 export const webhookVerifyController = (req: Request, res: Response) => {
   const TOKEN = config.whatsapp.token;
@@ -37,6 +38,8 @@ export const webhookMessageController = async (req: Request, res: Response) => {
     if (!message) return;
 
     const { messageDetails } = message;
+
+    logger.info("[BotController] Detalles del mensaje:", messageDetails);
 
     await botService.processUserMessage(messageDetails);
   } catch (error) {

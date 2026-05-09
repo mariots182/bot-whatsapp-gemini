@@ -45,7 +45,7 @@ class WhatsappService {
     }
 
     console.log(
-      `[WhatsappService][sendMessage] Mensaje enviado exitosamente a ${to} con respuesta: ${response}`,
+      `[WhatsappService][sendMessage] Mensaje enviado exitosamente a ${to} con respuesta: ${JSON.stringify(await response.json())}`,
     );
 
     return response;

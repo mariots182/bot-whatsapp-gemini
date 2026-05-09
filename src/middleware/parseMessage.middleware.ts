@@ -90,7 +90,5 @@ export const parseMessageMiddleware = async (
     type,
   };
 
-  console.log("[ParseMessageMiddleware] FINALIZANDO parseMessageMiddleware");
-
   next();
 };
