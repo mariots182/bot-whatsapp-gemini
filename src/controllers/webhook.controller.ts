@@ -40,6 +40,8 @@ export const webhookMessageController = async (req: Request, res: Response) => {
     logger.info("[BotController] Detalles del mensaje:", messageDetails);
 
     await botService.processUserMessage(messageDetails);
+
+    res.sendStatus(200);
   } catch (error) {
     logger.error("[BotController] Error en el mensaje:", error);
   }

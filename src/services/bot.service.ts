@@ -5,6 +5,7 @@ import {
   WhatsappAnswer,
   WhatsAppMessageDetails,
 } from "../utils/interfaces";
+import logger from "../utils/logger";
 import GeminiService from "./gemini.service";
 import WhatsappService from "./whatsapp.service";
 
@@ -32,10 +33,14 @@ class BotService {
         },
       ];
 
+      logger.info("[BotService] Enviando mensaje a Gemini:", userMessage);
+
       const geminiResponse =
         await this.geminiService.sendMessageToGemini(userMessage);
 
       const { whatsappAnswer } = geminiResponse;
+
+      logger.info("[BotService] Respuesta de Gemini:", whatsappAnswer);
 
       return await this.HandleMessage(from, phoneNumberId, whatsappAnswer);
     } catch (error) {
@@ -45,6 +50,7 @@ class BotService {
         options: {},
       };
 
+      logger.error("[BotService] Enviando mensaje de error:", whatsappAnswer);
       return await this.HandleMessage(from, phoneNumberId, whatsappAnswer);
     }
   }
