@@ -33,7 +33,11 @@ export default {
   google: {
     gemini: {
       apiKey: GOOGLE_GEMINI_API_KEY,
-      model: GOOGLE_GEMINI_MODEL,
+      model: GOOGLE_GEMINI_MODEL || "gemini-2.0-flash",
+    },
+    geolocation: {
+      apiKey: process.env.GOOGLE_GEOLOCATION_API_KEY,
+      geocodingURL: "https://maps.googleapis.com/maps/api/geocode/",
     },
   },
 };
