@@ -1,11 +1,19 @@
 import { WhatsAppMessageDetails } from "../interfaces";
 import logger from "../logger";
 
-export function extractMessageDetails(body: any): WhatsAppMessageDetails {
-  const entry = body?.entry?.[0];
+export function extractMessageDetails(body: {
+  entry?: Array<{
+    entry?: {
+      changes?: Array<{ changes?: { value: any } }>;
+    };
+  }>;
+}): WhatsAppMessageDetails {
+  const value = body?.entry?.[0].entry?.changes?.[0].changes?.value;
 
-  const changes = entry?.changes?.[0];
-  const value = changes?.value;
+  logger.info(
+    "[messagesUtils][extractMessageDetails] Extracting message details from body:",
+    body,
+  );
 
   const {
     metadata,

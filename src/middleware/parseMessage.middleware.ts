@@ -9,7 +9,6 @@ export const parseMessageMiddleware = async (
   res: Response,
   next: NextFunction,
 ) => {
-  logger.info("[ParseMessageMiddleware] INICIANDO parseMessageMiddleware");
   const messageDetails = extractMessageDetails(req.body);
   const {
     type,
