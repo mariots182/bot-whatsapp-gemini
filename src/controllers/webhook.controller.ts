@@ -27,26 +27,27 @@ export const webhookVerifyController = (req: Request, res: Response) => {
   }
 };
 
-export const webhookMessageController = (req: Request, res: Response) => {
+export const webhookMessageController = async (req: Request, res: Response) => {
   console.log("Received webhook message:", req.body);
   try {
     const botService = new BotService();
 
     const message = (req as any).message;
 
+    if (!message) return;
+
     const { messageDetails } = message;
 
-    const response = botService.processUserMessage(messageDetails);
-
-    return res.sendStatus(200).send(response);
+    await botService.processUserMessage(messageDetails);
   } catch (error) {
     console.error("[BotController] Error en el mensaje:", error);
-
-    return res.sendStatus(500);
   }
 };
 
-export const webhookMessageTestController = (req: Request, res: Response) => {
+export const webhookMessageTestController = async (
+  req: Request,
+  res: Response,
+) => {
   console.log("Received webhook test message:", req.body);
 
   try {
@@ -54,14 +55,12 @@ export const webhookMessageTestController = (req: Request, res: Response) => {
 
     const message = (req as any).message;
 
+    if (!message) return;
+
     const { messageDetails } = message;
 
-    const response = botService.processUserMessage(messageDetails);
-
-    return res.sendStatus(200).send(response);
+    await botService.processUserMessage(messageDetails);
   } catch (error) {
     console.error("[BotController] Error en el mensaje:", error);
-
-    return res.sendStatus(500);
   }
 };
