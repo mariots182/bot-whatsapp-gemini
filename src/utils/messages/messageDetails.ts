@@ -1,13 +1,7 @@
 import { WhatsAppMessageDetails } from "../interfaces";
 import logger from "../logger";
 
-export function extractMessageDetails(body: {
-  entry?: Array<{
-    entry?: {
-      changes?: Array<{ changes?: { value: any } }>;
-    };
-  }>;
-}): WhatsAppMessageDetails {
+export function extractMessageDetails(body: any): WhatsAppMessageDetails {
   const value = body?.entry?.[0].entry?.changes?.[0].changes?.value;
 
   logger.info(
