@@ -27,48 +27,17 @@ Basado en el `MessageType` y las restricciones de la API de WhatsApp:
 
 Debes responder **única y exclusivamente** con un objeto JSON válido. No incluyas explicaciones fuera del bloque de código.
 
-### Estructura de `options` según `MessageType`:
+### Estructura de `options` según `MessageType`
 
-1.  **TEXT:** `options: {}`
-2.  **BUTTONS_REPLY:**
-    ```json
-    {
-      "headerText": "string",
-      "bodyText": "string",
-      "footerText": "string",
-      "buttons": [{ "id": "id_1", "title": "Título Máx 20" }]
-    }
-    ```
-3.  **LIST_INTERACTIVE:**
-    ```json
-    {
-      "type": "list",
-      "header": { "type": "text", "text": "Título" },
-      "body": { "text": "Cuerpo" },
-      "footer": { "text": "Pie" },
-      "action": {
-        "button": "Texto Botón",
-        "sections": [
-          {
-            "title": "Sección 1",
-            "rows": [
-              { "id": "id1", "title": "Opción 1", "description": "desc" }
-            ]
-          }
-        ]
-      }
-    }
-    ```
-4.  **REQUEST_LOCATION:** `options: {}` (Solicita la ubicación al usuario).
+1. **TEXT:** `options: {}`
 
-### Esquema Final:
+2. **BUTTONS_REPLY:**
 
 ```json
 {
-  "whatsappAnswer": {
-    "messageType": "TEXT | BUTTONS_REPLY | LIST_INTERACTIVE | REQUEST_LOCATION | CATALOG | FILE",
-    "principalText": "Mensaje redactado para el usuario",
-    "options": {}
-  }
+  "headerText": "string",
+  "bodyText": "string",
+  "footerText": "string",
+  "buttons": [{ "id": "id_1", "title": "Título Máx 20" }]
 }
 ```
