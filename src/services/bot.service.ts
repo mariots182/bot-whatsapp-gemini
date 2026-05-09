@@ -13,8 +13,6 @@ class BotService {
   private whatsappService: WhatsappService;
   private geminiService: GeminiService;
 
-  // constructor(whatsappService: WhatsappService, geminiService: GeminiService) {
-
   constructor() {
     this.whatsappService = new WhatsappService();
     this.geminiService = new GeminiService();
@@ -33,14 +31,18 @@ class BotService {
         },
       ];
 
-      logger.info("[BotService] Enviando mensaje a Gemini:", userMessage);
+      logger.info(
+        `[BotService] Enviando mensaje a Gemini: ${JSON.stringify(userMessage)}`,
+      );
 
       const geminiResponse =
         await this.geminiService.sendMessageToGemini(userMessage);
 
       const { whatsappAnswer } = geminiResponse;
 
-      logger.info("[BotService] Respuesta de Gemini:", whatsappAnswer);
+      logger.info(
+        `[BotService] Respuesta de Gemini: ${JSON.stringify(whatsappAnswer)}`,
+      );
 
       return await this.HandleMessage(from, phoneNumberId, whatsappAnswer);
     } catch (error) {
@@ -62,25 +64,34 @@ class BotService {
   ): Promise<MessageResponse> {
     const { messageType, principalText: message, options } = whatsappAnswer;
     const { sendMessage } = this.whatsappService;
+    const interactiveButtonReply = options.button_reply;
+    const interactiveListReply = options.interactive_list;
+    const file = {
+      link: options.file!.link,
+      filename: options.file!.filename,
+    };
 
-    switch (messageType) {
-      case MessageType.TEXT:
-        return await sendMessage({
-          to,
-          phoneNumberId,
-          message,
-        });
-
-      case MessageType.ERROR:
-        return await sendMessage({
-          to,
-          phoneNumberId,
-          message: ERROR_MESSAGE,
-        });
-
-      default:
-        throw new Error(`Unsupported message type: ${messageType}`);
+    if (messageType === MessageType.ERROR) {
+      logger.error("[BotService] Enviando mensaje de error:", whatsappAnswer);
+      whatsappAnswer.principalText = ERROR_MESSAGE;
     }
+
+    const whatsappMessage = {
+      to,
+      phoneNumberId,
+      message,
+      interactiveButtonReply,
+      interactiveListReply,
+      file,
+    };
+
+    logger.info(
+      `[BotService] Preparando para enviar mensaje. Tipo: ${messageType}, Contenido: ${message}, Opciones: ${JSON.stringify(
+        options,
+      )}`,
+    );
+
+    return await sendMessage(whatsappMessage, messageType);
   }
 }
 

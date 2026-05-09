@@ -2,11 +2,10 @@ import { WhatsAppMessageDetails } from "../interfaces";
 import logger from "../logger";
 
 export function extractMessageDetails(body: any): WhatsAppMessageDetails {
-  const value = body?.entry?.[0].entry?.changes?.[0].changes?.value;
+  const value = body?.entry?.[0]?.changes?.[0].value;
 
   logger.info(
-    "[messagesUtils][extractMessageDetails] Extracting message details from body:",
-    body,
+    `[messagesUtils][extractMessageDetails] Extracting message details from value: ${JSON.stringify(value)}`,
   );
 
   const {
