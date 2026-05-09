@@ -28,6 +28,9 @@ export const webhookVerifyController = (req: Request, res: Response) => {
 
 export const webhookMessageController = async (req: Request, res: Response) => {
   logger.info("[WebhookController] Received webhook message:", req.body);
+
+  res.sendStatus(200);
+
   try {
     const botService = new BotService();
 
@@ -40,8 +43,6 @@ export const webhookMessageController = async (req: Request, res: Response) => {
     logger.info("[WebhookController] Detalles del mensaje:", messageDetails);
 
     await botService.processUserMessage(messageDetails);
-
-    res.sendStatus(200);
   } catch (error) {
     logger.error("[BotController] Error en el mensaje:", error);
   }

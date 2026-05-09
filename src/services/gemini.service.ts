@@ -1,4 +1,4 @@
-import { Content, GenerateContentConfig, GoogleGenAI } from "@google/genai";
+import { Content, GoogleGenAI } from "@google/genai";
 
 import { GeminiResponse } from "../utils/interfaces";
 
@@ -10,15 +10,15 @@ const { apiKey, model } = config.google.gemini;
 const ai = new GoogleGenAI({ apiKey });
 
 class GeminiService {
-  async sendMessageToGemini(message: Content[]): Promise<GeminiResponse> {
+  async sendMessageToGemini(contents: Content[]): Promise<GeminiResponse> {
     try {
-      const config: GenerateContentConfig = {
+      const config = {
         temperature: 0.2,
         maxOutputTokens: 2048,
         responseMimeType: "application/json",
         systemInstruction: "",
       };
-      const contents = message;
+
       const result = await ai.models.generateContent({
         model,
         contents,
