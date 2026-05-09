@@ -1,41 +1,55 @@
 import config from "../config";
-import { WHATSAPP } from "../utils/consts";
+import { HTTP, WHATSAPP } from "../utils/consts";
 import { WhatsAppMessage } from "../utils/interfaces";
 
+const { apiUrl, apiVersion, token } = config.whatsapp;
+
 const { MESSAGING_PRODUCT } = WHATSAPP;
-const whatsappURL = `${config.whatsapp.apiUrl}${config.whatsapp.apiVersion}`;
-const whatsappHeaders = {
-  Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+const whatsappURL = `${apiUrl}${apiVersion}`;
+const headers = {
+  Authorization: `Bearer ${token}`,
   "Content-Type": "application/json",
 };
 
-export const sendMessage = async (whatsappMessage: WhatsAppMessage) => {
-  const { to, phoneNumberId, message } = whatsappMessage;
-  const sendTo = to.slice(0, 2) + to.slice(3);
+class WhatsappService {
+  async sendMessage(whatsappMessage: WhatsAppMessage): Promise<any> {
+    const { to, phoneNumberId, message } = whatsappMessage;
+    const sendTo = to.slice(0, 2) + to.slice(3);
 
-  const response = await fetch(`${whatsappURL}/${phoneNumberId}/messages`, {
-    method: "POST",
-    headers: whatsappHeaders,
-    body: JSON.stringify({
+    const body = JSON.stringify({
       messaging_product: MESSAGING_PRODUCT,
       to: sendTo,
       type: "text",
       text: { body: message },
-    }),
-  }).catch((error) => {
-    console.error(
-      `[whatsapp][sendMessage] Error al enviar el mensaje: ${error}`,
+    });
+
+    const response = await fetch(`${whatsappURL}/${phoneNumberId}/messages`, {
+      method: HTTP.METHODS.POST,
+      headers,
+      body,
+    }).catch((error) => {
+      console.error(
+        `[whatsapp][sendMessage] Error al enviar el mensaje: ${error}`,
+      );
+      throw error;
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+
+      console.error(
+        `[WhatsappService][sendMessage] Error al enviar el mensaje: ${response.status} - ${error}`,
+      );
+
+      throw error;
+    }
+
+    console.log(
+      `[WhatsappService][sendMessage] Mensaje enviado exitosamente a ${to} con respuesta: ${response}`,
     );
-    throw error;
-  });
 
-  if (!response.ok) {
-    const error = await response.text();
-
-    console.error(
-      `[WhatsappService][sendMessage] Error al enviar el mensaje: ${response.status} - ${error}`,
-    );
-
-    throw error;
+    return response;
   }
-};
+}
+
+export default WhatsappService;
