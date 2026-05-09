@@ -20,7 +20,9 @@ export const parseMessageMiddleware = async (
     displayPhoneNumber,
   } = messageDetails;
 
-  logger.info("[ParseMessageMiddleware] Detalles del mensaje:", messageDetails);
+  logger.info(
+    `[ParseMessageMiddleware] Detalles del mensaje: ${JSON.stringify(messageDetails)}`,
+  );
 
   if (!messageDetails.isValid) {
     return res.sendStatus(200);
@@ -47,7 +49,9 @@ export const parseMessageMiddleware = async (
 
       const { location } = messageDetails;
 
-      logger.info("[ParseMiddleware] Ubicación recibida:", location);
+      logger.info(
+        `[ParseMiddleware] Ubicación recibida: ${JSON.stringify(location)}`,
+      );
 
       const address = await handleGeocodingAddress(location);
 
@@ -70,7 +74,7 @@ export const parseMessageMiddleware = async (
 
   if (!text) {
     logger.info(
-      "[ParseMiddleware] No se pudo extraer texto procesable del mensaje. Ignorando.",
+      `[ParseMiddleware] No se pudo extraer texto procesable del mensaje. Ignorando.`,
     );
     return res.sendStatus(200);
   }

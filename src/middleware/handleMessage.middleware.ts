@@ -7,8 +7,8 @@ export const handleMessageMiddleware = (
   next: NextFunction,
 ) => {
   logger.info(
-    "[HandleMessageMiddleware] INICIANDO handleMessageMiddleware",
-    req.body,
+    `[HandleMessageMiddleware] INICIANDO handleMessageMiddleware
+    req.body: ${JSON.stringify(req.body)}`,
   );
 
   const body = req.body;
@@ -23,7 +23,7 @@ export const handleMessageMiddleware = (
     return res.sendStatus(200);
   }
 
-  logger.info("[HandleMessageMiddleware] Received message change:", change);
+  logger.info(`[HandleMessageMiddleware] Received message change: ${change}`);
 
   next();
 };
