@@ -2,8 +2,10 @@ import express from "express";
 import cors from "cors";
 import routes from "./routes/routes";
 import config from "./config";
+
 import { HTTP } from "./utils/consts";
 import logger from "./utils/logger";
+import { connectRedis } from "./utils/redis";
 
 const { corsOrigin, port } = config.app;
 const {
@@ -24,6 +26,20 @@ app.use(
 
 app.use(routes);
 
-app.listen(port, () => {
-  logger.info(`Server is running on port ${port}`);
-});
+async function startServer() {
+  try {
+    await connectRedis();
+
+    logger.info("Conexión a Redis lista");
+
+    app.listen(port, () => {
+      logger.info(`${port}`);
+    });
+  } catch (error) {
+    logger.error("Error fatal al arrancar:", error);
+
+    process.exit(1);
+  }
+}
+
+startServer();

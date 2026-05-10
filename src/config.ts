@@ -39,4 +39,8 @@ export default {
       geocodingURL: "https://maps.googleapis.com/maps/api/geocode/",
     },
   },
+
+  redis: {
+    url: process.env.REDIS_URL,
+  },
 };
