@@ -19,6 +19,7 @@ import WhatsappService from "./whatsapp.service";
 class BotService {
   private whatsappService: WhatsappService;
   private geminiService: GeminiService;
+  private static timers = new Map<string, NodeJS.Timeout>();
 
   constructor() {
     this.whatsappService = new WhatsappService();
@@ -27,25 +28,61 @@ class BotService {
 
   async processUserMessage(
     whatsappMessageDetails: WhatsAppMessageDetails,
-  ): Promise<MessageResponse> {
+  ): Promise<void> {
     const { from, phoneNumberId, text } = whatsappMessageDetails;
 
+    const bufferKey = `buffer:${from}`;
+
     try {
-      const conversation = await this.handleConversation(from, text);
+      const currentBuffer = await redisClient.get(bufferKey);
+
+      const newBuffer = currentBuffer ? `${currentBuffer} ${text}` : text;
+
+      await redisClient.set(bufferKey, newBuffer, { EX: 60 });
+
+      if (BotService.timers.has(from)) {
+        clearTimeout(BotService.timers.get(from)!);
+        logger.info(`[BotService] Reiniciando timer para ${from}`);
+      }
+
+      const timeout = setTimeout(async () => {
+        await this.executeConversation(from, phoneNumberId);
+      }, 4000);
+
+      BotService.timers.set(from, timeout);
+    } catch (error) {
+      logger.error(`[BotService] Error en el buffering: ${error}`);
+    }
+  }
+
+  private async executeConversation(waId: string, phoneNumberId: string) {
+    const bufferKey = `buffer:${waId}`;
+
+    try {
+      const fullMessage = await redisClient.get(bufferKey);
+
+      await redisClient.del(bufferKey);
+
+      BotService.timers.delete(waId);
+
+      if (!fullMessage) return;
+
+      logger.info(`[BotService] Procesando ráfaga completa: "${fullMessage}"`);
+
+      const conversation = await this.handleConversation(waId, fullMessage);
 
       const { whatsappAnswer } = conversation;
 
-      return await this.handleMessage(from, phoneNumberId, whatsappAnswer);
+      await this.handleMessage(waId, phoneNumberId, whatsappAnswer);
     } catch (error) {
-      const whatsappAnswer = {
+      logger.error(`[BotService] Error en el flujo principal: ${error}`);
+
+      const errorAnswer = {
         messageType: MessageType.ERROR,
         principalText: ERROR_MESSAGE,
         options: {},
       };
-
-      logger.error("[BotService] Enviando mensaje de error:", whatsappAnswer);
-
-      return await this.handleMessage(from, phoneNumberId, whatsappAnswer);
+      await this.handleMessage(waId, phoneNumberId, errorAnswer);
     }
   }
 
@@ -110,9 +147,7 @@ class BotService {
       parts: [{ text: userMessage }],
     });
 
-    const geminiService = new GeminiService();
-
-    const response = await geminiService.sendMessageToGemini(history);
+    const response = await this.geminiService.sendMessageToGemini(history);
 
     history.push({
       role: ConversationRole.MODEL,

@@ -23,4 +23,16 @@ export const connectRedis = async () => {
   }
 };
 
+export const appendToBuffer = async (waId: string, text: string) => {
+  const key = `buffer:${waId}`;
+  const current = await redisClient.get(key);
+  const updated = current ? `${current} ${text}` : text;
+  await redisClient.set(key, updated, { EX: 60 });
+  return updated;
+};
+
+export const clearBuffer = async (waId: string) => {
+  await redisClient.del(`buffer:${waId}`);
+};
+
 export default redisClient;
