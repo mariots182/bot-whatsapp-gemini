@@ -26,7 +26,7 @@ class BotService {
     this.geminiService = new GeminiService();
   }
 
-  async processUserMessage(
+  async handleMessageIncoming(
     whatsappMessageDetails: WhatsAppMessageDetails,
   ): Promise<void> {
     const { from, phoneNumberId, text } = whatsappMessageDetails;
@@ -43,7 +43,9 @@ class BotService {
       if (BotService.timers.has(from)) {
         clearTimeout(BotService.timers.get(from)!);
 
-        logger.info(`[BotService] Reiniciando timer para ${from}`);
+        logger.info(
+          `[BotService][handleMessageIncoming] Reiniciando timer para ${from}`,
+        );
       }
 
       const timeout = setTimeout(async () => {
@@ -52,7 +54,9 @@ class BotService {
 
       BotService.timers.set(from, timeout);
     } catch (error) {
-      logger.error(`[BotService] Error en el buffering: ${error}`);
+      logger.error(
+        `[BotService][handleMessageIncoming] Error en el buffering: ${error}`,
+      );
     }
   }
 
@@ -68,26 +72,30 @@ class BotService {
 
       if (!fullMessage) return;
 
-      logger.info(`[BotService] Procesando ráfaga completa: "${fullMessage}"`);
+      logger.info(
+        `[BotService][executeConversation] Procesando ráfaga completa: "${fullMessage}"`,
+      );
 
       const conversation = await this.handleConversation(waId, fullMessage);
 
       const { whatsappAnswer } = conversation;
 
-      await this.handleMessage(waId, phoneNumberId, whatsappAnswer);
+      await this.handleMessageResponse(waId, phoneNumberId, whatsappAnswer);
     } catch (error) {
-      logger.error(`[BotService] Error en el flujo principal: ${error}`);
+      logger.error(
+        `[BotService][executeConversation] Error en el flujo principal: ${error}`,
+      );
 
       const errorAnswer = {
         messageType: MessageType.ERROR,
         principalText: ERROR_MESSAGE,
         options: {},
       };
-      await this.handleMessage(waId, phoneNumberId, errorAnswer);
+      await this.handleMessageResponse(waId, phoneNumberId, errorAnswer);
     }
   }
 
-  async handleMessage(
+  async handleMessageResponse(
     to: string,
     phoneNumberId: string,
     whatsappAnswer: WhatsappAnswer,
@@ -95,7 +103,7 @@ class BotService {
     const { messageType, principalText: message, options } = whatsappAnswer;
 
     logger.info(
-      `[BotService] Preparando para enviar mensaje. Tipo: ${messageType}, Contenido: ${message}, Opciones: ${JSON.stringify(
+      `[BotService][handleMessageResponse] Preparando para enviar mensaje. Tipo: ${messageType}, Contenido: ${message}, Opciones: ${JSON.stringify(
         options,
       )}`,
     );
@@ -110,12 +118,6 @@ class BotService {
       file: options as WhatsappDocument,
     };
 
-    logger.info(
-      `[BotService] Preparando para enviar mensaje. Tipo: ${messageType}, Contenido: ${message}, Opciones: ${JSON.stringify(
-        options,
-      )}`,
-    );
-
     return await this.whatsappService.sendMessage(whatsappMessage, messageType);
   }
 
@@ -125,20 +127,12 @@ class BotService {
   ): Promise<GeminiResponse> {
     const redisKey = `chat:${waId}`;
 
-    logger.info(
-      `[BotService] Obteniendo historial de conversación para waId: ${waId} con clave Redis: ${redisKey}`,
-    );
-
     const rawHistory = await redisClient.get(redisKey);
-
-    logger.info(
-      `[BotService] Historial obtenido de Redis para waId: ${waId}: ${rawHistory}`,
-    );
 
     let history = rawHistory ? JSON.parse(rawHistory) : [];
 
     logger.info(
-      `[BotService] Historial parseado para waId: ${waId}: ${JSON.stringify(
+      `[BotService][handleConversation] Historial parseado para waId: ${waId}: ${JSON.stringify(
         history,
       )}`,
     );

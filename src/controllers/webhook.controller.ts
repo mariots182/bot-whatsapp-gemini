@@ -46,7 +46,7 @@ export const webhookMessageController = async (req: Request, res: Response) => {
       `[WebhookController] Detalles del mensaje: ${JSON.stringify(messageDetails)}`,
     );
 
-    return await botService.processUserMessage(messageDetails);
+    return await botService.handleMessageIncoming(messageDetails);
   } catch (error) {
     logger.error(
       `[BotController] Error en el mensaje: ${JSON.stringify(error)}`,
@@ -73,7 +73,7 @@ export const webhookMessageTestController = async (
 
     const { messageDetails } = message;
 
-    return await botService.processUserMessage(messageDetails);
+    return await botService.handleMessageIncoming(messageDetails);
   } catch (error) {
     logger.error(
       `[BotController] Error en el mensaje: ${JSON.stringify(error)}`,
