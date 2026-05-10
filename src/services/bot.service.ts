@@ -42,6 +42,7 @@ class BotService {
 
       if (BotService.timers.has(from)) {
         clearTimeout(BotService.timers.get(from)!);
+
         logger.info(`[BotService] Reiniciando timer para ${from}`);
       }
 

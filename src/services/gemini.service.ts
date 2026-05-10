@@ -22,7 +22,7 @@ class GeminiService {
       logger.info(
         `[GeminiService] Enviando mensaje a Gemini con contenido: ${JSON.stringify(
           contents,
-        )} y systemInstruction: ${systemInstruction}`,
+        )}`,
       );
 
       const config = {
