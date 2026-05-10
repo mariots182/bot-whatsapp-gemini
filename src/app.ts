@@ -30,8 +30,6 @@ async function startServer() {
   try {
     await connectRedis();
 
-    logger.info("Conexión a Redis lista");
-
     app.listen(port, () => {
       logger.info(`${port}`);
     });
