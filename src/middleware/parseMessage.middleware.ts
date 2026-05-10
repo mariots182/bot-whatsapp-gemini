@@ -8,6 +8,28 @@ export const parseMessageMiddleware = async (
   res: Response,
   next: NextFunction,
 ) => {
+  const change = req.body?.entry?.[0]?.changes?.[0]?.value;
+
+  if (!change) {
+    logger.warn(
+      "[ParseMessageMiddleware] No se encontraron cambios en el cuerpo de la solicitud.",
+    );
+    return res.sendStatus(400);
+  }
+
+  if (change.statuses) {
+    logger.warn(
+      `[ParseMessageMiddleware] Recibido cambio de estado: ${JSON.stringify(
+        change.statuses,
+      )}`,
+    );
+    return res.sendStatus(200);
+  }
+
+  logger.info(
+    `[ParseMessageMiddleware] Received message change: ${JSON.stringify(change)}`,
+  );
+
   const messageDetails = extractMessageDetails(req.body);
   const {
     type,
@@ -19,15 +41,11 @@ export const parseMessageMiddleware = async (
     displayPhoneNumber,
   } = messageDetails;
 
-  logger.info(
-    `[ParseMessageMiddleware] Detalles del mensaje: ${JSON.stringify(messageDetails)}`,
-  );
+  let text: string | null = null;
 
   if (!messageDetails.isValid) {
     return res.sendStatus(200);
   }
-
-  let text: string | null = null;
 
   switch (type) {
     case "text":
