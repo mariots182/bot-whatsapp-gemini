@@ -12,3 +12,8 @@ export enum ConversationRole {
   USER = "user",
   MODEL = "model",
 }
+
+export enum Language {
+  MEX = "MEX",
+  ENG = "ENG",
+}

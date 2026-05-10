@@ -1,4 +1,4 @@
-import { MessageType } from "./enums";
+import { Language, MessageType } from "./enums";
 
 export interface WhatsAppMessage {
   to: string;
@@ -6,7 +6,8 @@ export interface WhatsAppMessage {
   message?: string;
   interactiveButtonReply?: InteractiveButtonReply;
   interactiveListReply?: InteractiveListReply;
-  file?: Document;
+  interactiveCatalog?: InteractiveCatalog;
+  file?: WhatsappDocument;
 }
 
 export interface WhatsAppMessageDetails {
@@ -62,11 +63,11 @@ export interface InteractiveButtonReply {
 
 export interface InteractiveListReply {
   type: "list";
-  body: {
-    text: string;
-  };
   header: {
     type: "text";
+    text: string;
+  };
+  body: {
     text: string;
   };
   footer: {
@@ -75,6 +76,29 @@ export interface InteractiveListReply {
   action: {
     button: string;
     sections: Section[];
+  };
+}
+
+export interface InteractiveCatalog {
+  name: string;
+  language: {
+    code: Language.MEX;
+  };
+  components: Component[];
+}
+
+export interface Component {
+  type: "body" | "button";
+  parameters: Parameter[];
+  sub_type?: MessageType.CATALOG;
+  index?: number;
+}
+
+export interface Parameter {
+  type: "text" | "action";
+  text?: string;
+  action?: {
+    thumbnail_product_retailer_id: string;
   };
 }
 
@@ -88,7 +112,7 @@ export interface Buttons {
   title: string;
 }
 
-interface Document {
+export interface WhatsappDocument {
   link: string;
   filename: string;
 }
@@ -113,14 +137,11 @@ export interface MessageResponse {
 export interface WhatsappAnswer {
   messageType: MessageType;
   principalText: string;
-  options: {
-    button_reply?: InteractiveButtonReply;
-    interactive_list?: InteractiveListReply;
-    file?: {
-      link: string;
-      filename: string;
-    };
-  };
+  options:
+    | InteractiveButtonReply
+    | InteractiveListReply
+    | WhatsappDocument
+    | {};
 }
 
 export interface GeminiResponse {
