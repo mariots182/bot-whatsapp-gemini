@@ -1,7 +1,8 @@
-import { send } from "node:process";
+import { Content } from "@google/genai";
 import { ERROR_MESSAGE } from "../utils/consts";
 import { ConversationRole, MessageType } from "../utils/enums";
 import {
+  GeminiResponse,
   InteractiveButtonReply,
   InteractiveCatalog,
   InteractiveListReply,
@@ -11,6 +12,7 @@ import {
   WhatsAppMessageDetails,
 } from "../utils/interfaces";
 import logger from "../utils/logger";
+import redisClient from "../utils/redis";
 import GeminiService from "./gemini.service";
 import WhatsappService from "./whatsapp.service";
 
@@ -29,29 +31,9 @@ class BotService {
     const { from, phoneNumberId, text } = whatsappMessageDetails;
 
     try {
-      const userMessage = [
-        {
-          role: ConversationRole.USER,
-          parts: [{ text }],
-        },
-      ];
+      const conversation = await this.handleConversation(from, text);
 
-      logger.info(
-        `[BotService] Enviando mensaje a Gemini: ${JSON.stringify(userMessage)}`,
-      );
-
-      const geminiResponse =
-        await this.geminiService.sendMessageToGemini(userMessage);
-
-      const { whatsappAnswer } = geminiResponse;
-
-      logger.info(
-        `[BotService] Respuesta de Gemini: ${JSON.stringify(whatsappAnswer)}`,
-      );
-
-      logger.info(
-        `[BotService] Texto de la Respuesta de Gemini: ${JSON.stringify(whatsappAnswer.principalText)}`,
-      );
+      const { whatsappAnswer } = conversation;
 
       return await this.handleMessage(from, phoneNumberId, whatsappAnswer);
     } catch (error) {
@@ -80,27 +62,6 @@ class BotService {
       )}`,
     );
 
-    const interactiveButtonReply = options;
-    const interactiveListReply = options;
-    const interactiveCatalog = options;
-    const file = options;
-
-    logger.info(
-      `[BotService] interactiveButtonReply: ${JSON.stringify(
-        interactiveButtonReply,
-      )} - interactiveListReply: ${JSON.stringify(
-        interactiveListReply,
-      )} - interactiveCatalog: ${JSON.stringify(
-        interactiveCatalog,
-      )} - file: ${JSON.stringify(file)}`,
-    );
-
-    logger.info(
-      `[BotService] interactiveListReply: ${JSON.stringify(
-        interactiveListReply,
-      )}`,
-    );
-
     const whatsappMessage = {
       to,
       phoneNumberId,
@@ -118,6 +79,53 @@ class BotService {
     );
 
     return await this.whatsappService.sendMessage(whatsappMessage, messageType);
+  }
+
+  async handleConversation(
+    waId: string,
+    userMessage: string,
+  ): Promise<GeminiResponse> {
+    const redisKey = `chat:${waId}`;
+
+    logger.info(
+      `[BotService] Obteniendo historial de conversación para waId: ${waId} con clave Redis: ${redisKey}`,
+    );
+
+    const rawHistory = await redisClient.get(redisKey);
+
+    logger.info(
+      `[BotService] Historial obtenido de Redis para waId: ${waId}: ${rawHistory}`,
+    );
+
+    let history = rawHistory ? JSON.parse(rawHistory) : [];
+
+    logger.info(
+      `[BotService] Historial parseado para waId: ${waId}: ${JSON.stringify(
+        history,
+      )}`,
+    );
+
+    history.push({
+      role: ConversationRole.USER,
+      parts: [{ text: userMessage }],
+    });
+
+    const geminiService = new GeminiService();
+
+    const response = await geminiService.sendMessageToGemini(history);
+
+    history.push({
+      role: ConversationRole.MODEL,
+      parts: [{ text: JSON.stringify(response) }],
+    });
+
+    const trimmedHistory = history.slice(-10);
+
+    await redisClient.set(redisKey, JSON.stringify(trimmedHistory), {
+      EX: 86400,
+    });
+
+    return response;
   }
 }
 
