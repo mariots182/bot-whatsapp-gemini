@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { handleGeocodingAddress } from "../utils/messages/messageGeocoding";
-import { extractMessageDetails } from "../utils/messages/messageDetails";
-import logger from "../utils/logger";
+import { handleGeocodingAddress } from "../../utils/messages/messageGeocoding";
+import { extractMessageDetails } from "../../utils/messages/messageDetails";
+import logger from "../../utils/logger";
 
 export const parseMessageMiddleware = async (
   req: Request,

@@ -95,7 +95,7 @@ class BotService {
     }
   }
 
-  async handleMessageResponse(
+  private async handleMessageResponse(
     to: string,
     phoneNumberId: string,
     whatsappAnswer: WhatsappAnswer,
@@ -121,7 +121,7 @@ class BotService {
     return await this.whatsappService.sendMessage(whatsappMessage, messageType);
   }
 
-  async handleConversation(
+  private async handleConversation(
     waId: string,
     userMessage: string,
   ): Promise<GeminiResponse> {

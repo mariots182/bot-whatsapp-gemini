@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import routes from "./routes/routes";
+import routes from "./api/routes/routes";
 import config from "./config";
 
 import { HTTP } from "./utils/consts";

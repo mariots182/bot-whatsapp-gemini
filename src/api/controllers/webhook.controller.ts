@@ -1,8 +1,8 @@
 import { Request, response, Response } from "express";
-import config from "../config";
-import { WHATSAPP } from "../utils/consts";
-import BotService from "../services/bot.service";
-import logger from "../utils/logger";
+import config from "../../config";
+import { WHATSAPP } from "../../utils/consts";
+import BotService from "../../services/bot.service";
+import logger from "../../utils/logger";
 
 export const webhookVerifyController = (req: Request, res: Response) => {
   const TOKEN = config.whatsapp.token;
