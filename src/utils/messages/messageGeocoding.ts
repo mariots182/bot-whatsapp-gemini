@@ -7,9 +7,11 @@ export async function handleGeocodingAddress(location: {
   latitude: number;
   longitude: number;
 }): Promise<string> {
-  const geoUrl = `${geocodingURL}json?latlng=${location.latitude},${location.longitude}&key=${apiKey}`;
+  const { latitude, longitude } = location;
+  const geoUrl = `${geocodingURL}json?latlng=${latitude},${longitude}&key=${apiKey}`;
+
   let nearbyAddresses: string[] = [];
-  let messageAddresses;
+  let messageAddresses = "";
 
   try {
     const response = await fetch(geoUrl);

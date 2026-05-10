@@ -48,11 +48,11 @@ class GeminiService {
         );
       }
 
-      const whatsappAnswer = {
-        whatsappAnswer: JSON.parse(result.candidates[0].content.parts[0].text),
-      };
+      const geminiResponse = JSON.parse(
+        result.candidates[0].content.parts[0].text,
+      );
 
-      return whatsappAnswer;
+      return geminiResponse;
     } catch (error) {
       let errorMessage = "Error desconocido";
 

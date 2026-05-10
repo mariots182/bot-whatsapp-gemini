@@ -1,8 +1,13 @@
+import { send } from "node:process";
 import { ERROR_MESSAGE } from "../utils/consts";
 import { ConversationRole, MessageType } from "../utils/enums";
 import {
+  InteractiveButtonReply,
+  InteractiveCatalog,
+  InteractiveListReply,
   MessageResponse,
   WhatsappAnswer,
+  WhatsappDocument,
   WhatsAppMessageDetails,
 } from "../utils/interfaces";
 import logger from "../utils/logger";
@@ -44,45 +49,66 @@ class BotService {
         `[BotService] Respuesta de Gemini: ${JSON.stringify(whatsappAnswer)}`,
       );
 
-      return await this.HandleMessage(from, phoneNumberId, whatsappAnswer);
+      logger.info(
+        `[BotService] Texto de la Respuesta de Gemini: ${JSON.stringify(whatsappAnswer.principalText)}`,
+      );
+
+      return await this.handleMessage(from, phoneNumberId, whatsappAnswer);
     } catch (error) {
-      const whatsappAnswer: WhatsappAnswer = {
+      const whatsappAnswer = {
         messageType: MessageType.ERROR,
         principalText: ERROR_MESSAGE,
         options: {},
       };
 
       logger.error("[BotService] Enviando mensaje de error:", whatsappAnswer);
-      return await this.HandleMessage(from, phoneNumberId, whatsappAnswer);
+
+      return await this.handleMessage(from, phoneNumberId, whatsappAnswer);
     }
   }
 
-  async HandleMessage(
+  async handleMessage(
     to: string,
     phoneNumberId: string,
     whatsappAnswer: WhatsappAnswer,
   ): Promise<MessageResponse> {
     const { messageType, principalText: message, options } = whatsappAnswer;
-    const { sendMessage } = this.whatsappService;
-    const interactiveButtonReply = options.button_reply;
-    const interactiveListReply = options.interactive_list;
-    const file = {
-      link: options.file!.link,
-      filename: options.file!.filename,
-    };
 
-    if (messageType === MessageType.ERROR) {
-      logger.error("[BotService] Enviando mensaje de error:", whatsappAnswer);
-      whatsappAnswer.principalText = ERROR_MESSAGE;
-    }
+    logger.info(
+      `[BotService] Preparando para enviar mensaje. Tipo: ${messageType}, Contenido: ${message}, Opciones: ${JSON.stringify(
+        options,
+      )}`,
+    );
+
+    const interactiveButtonReply = options;
+    const interactiveListReply = options;
+    const interactiveCatalog = options;
+    const file = options;
+
+    logger.info(
+      `[BotService] interactiveButtonReply: ${JSON.stringify(
+        interactiveButtonReply,
+      )} - interactiveListReply: ${JSON.stringify(
+        interactiveListReply,
+      )} - interactiveCatalog: ${JSON.stringify(
+        interactiveCatalog,
+      )} - file: ${JSON.stringify(file)}`,
+    );
+
+    logger.info(
+      `[BotService] interactiveListReply: ${JSON.stringify(
+        interactiveListReply,
+      )}`,
+    );
 
     const whatsappMessage = {
       to,
       phoneNumberId,
       message,
-      interactiveButtonReply,
-      interactiveListReply,
-      file,
+      interactiveButtonReply: options as InteractiveButtonReply,
+      interactiveListReply: options as InteractiveListReply,
+      interactiveCatalog: options as InteractiveCatalog,
+      file: options as WhatsappDocument,
     };
 
     logger.info(
@@ -91,7 +117,7 @@ class BotService {
       )}`,
     );
 
-    return await sendMessage(whatsappMessage, messageType);
+    return await this.whatsappService.sendMessage(whatsappMessage, messageType);
   }
 }
 
