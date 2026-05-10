@@ -15,6 +15,9 @@ const {
   WHATSAPP_API_VERSION,
   GOOGLE_GEMINI_API_KEY,
   GOOGLE_GEMINI_MODEL,
+  GOOGLE_GEOLOCATION_API_KEY,
+  GOOGLE_GEOLOCATION_API_URL,
+  REDIS_URL,
 } = process.env;
 
 export default {
@@ -35,12 +38,12 @@ export default {
       model: GOOGLE_GEMINI_MODEL || "gemini-2.0-flash",
     },
     geolocation: {
-      apiKey: process.env.GOOGLE_GEOLOCATION_API_KEY,
-      geocodingURL: "https://maps.googleapis.com/maps/api/geocode/",
+      apiKey: GOOGLE_GEOLOCATION_API_KEY,
+      geocodingURL: GOOGLE_GEOLOCATION_API_URL,
     },
   },
 
   redis: {
-    url: process.env.REDIS_URL,
+    url: REDIS_URL,
   },
 };
