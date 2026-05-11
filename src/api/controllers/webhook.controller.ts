@@ -1,4 +1,4 @@
-import { Request, response, Response } from "express";
+import { Request, Response } from "express";
 import config from "../../config";
 import { WHATSAPP } from "../../utils/consts";
 import BotService from "../../services/bot.service";

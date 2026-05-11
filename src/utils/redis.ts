@@ -2,7 +2,9 @@ import { createClient } from "redis";
 import logger from "./logger";
 import config from "../config";
 
-const redisUrl = config.redis.url;
+const { host, port } = config.redis;
+
+const redisUrl = `${host}:${port}`;
 
 const redisClient = createClient({
   url: redisUrl,

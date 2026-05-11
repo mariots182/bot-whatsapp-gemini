@@ -17,3 +17,7 @@ export enum Language {
   MEX = "MEX",
   ENG = "ENG",
 }
+
+export enum Queues {
+  MESSAGES = "messages",
+}

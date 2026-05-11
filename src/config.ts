@@ -17,7 +17,9 @@ const {
   GOOGLE_GEMINI_MODEL,
   GOOGLE_GEOLOCATION_API_KEY,
   GOOGLE_GEOLOCATION_API_URL,
-  REDIS_URL,
+  REDIS_HOST,
+  REDIS_PORT,
+  REDIS_PASSWORD,
 } = process.env;
 
 export default {
@@ -44,6 +46,8 @@ export default {
   },
 
   redis: {
-    url: REDIS_URL,
+    host: REDIS_HOST,
+    port: REDIS_PORT,
+    password: REDIS_PASSWORD,
   },
 };

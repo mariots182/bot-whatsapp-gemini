@@ -1,4 +1,3 @@
-import { Content } from "@google/genai";
 import { ERROR_MESSAGE } from "../utils/consts";
 import { ConversationRole, MessageType } from "../utils/enums";
 import {
@@ -26,41 +25,7 @@ class BotService {
     this.geminiService = new GeminiService();
   }
 
-  async handleMessageIncoming(
-    whatsappMessageDetails: WhatsAppMessageDetails,
-  ): Promise<void> {
-    const { from, phoneNumberId, text } = whatsappMessageDetails;
-
-    const bufferKey = `buffer:${from}`;
-
-    try {
-      const currentBuffer = await redisClient.get(bufferKey);
-
-      const newBuffer = currentBuffer ? `${currentBuffer} ${text}` : text;
-
-      await redisClient.set(bufferKey, newBuffer, { EX: 60 });
-
-      if (BotService.timers.has(from)) {
-        clearTimeout(BotService.timers.get(from)!);
-
-        logger.info(
-          `[BotService][handleMessageIncoming] Reiniciando timer para ${from}`,
-        );
-      }
-
-      const timeout = setTimeout(async () => {
-        await this.executeConversation(from, phoneNumberId);
-      }, 4000);
-
-      BotService.timers.set(from, timeout);
-    } catch (error) {
-      logger.error(
-        `[BotService][handleMessageIncoming] Error en el buffering: ${error}`,
-      );
-    }
-  }
-
-  private async executeConversation(waId: string, phoneNumberId: string) {
+  async executeConversation(waId: string, phoneNumberId: string) {
     const bufferKey = `buffer:${waId}`;
 
     try {
@@ -93,6 +58,30 @@ class BotService {
       };
       await this.handleMessageResponse(waId, phoneNumberId, errorAnswer);
     }
+  }
+
+  async handleMessageIncoming(
+    whatsappMessageDetails: WhatsAppMessageDetails,
+  ): Promise<void> {
+    const { from, text } = whatsappMessageDetails;
+
+    try {
+      return await this.handleMessageBuffer(from, text);
+    } catch (error) {
+      logger.error(
+        `[BotService][handleMessageIncoming] Error en el buffering: ${error}`,
+      );
+    }
+  }
+
+  private async handleMessageBuffer(from: string, text: string) {
+    const bufferKey = `buffer:${from}`;
+
+    const currentBuffer = await redisClient.get(bufferKey);
+
+    const newBuffer = currentBuffer ? `${currentBuffer} ${text}` : text;
+
+    await redisClient.set(bufferKey, newBuffer, { EX: 60 });
   }
 
   private async handleMessageResponse(
