@@ -6,6 +6,7 @@ import config from "./config";
 import { HTTP } from "./utils/consts";
 import logger from "./utils/logger";
 import { connectRedis } from "./utils/redis";
+import "./queues/message.worker";
 
 const { corsOrigin, port } = config.app;
 const {

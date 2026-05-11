@@ -18,7 +18,6 @@ import WhatsappService from "./whatsapp.service";
 class BotService {
   private whatsappService: WhatsappService;
   private geminiService: GeminiService;
-  private static timers = new Map<string, NodeJS.Timeout>();
 
   constructor() {
     this.whatsappService = new WhatsappService();
@@ -32,8 +31,6 @@ class BotService {
       const fullMessage = await redisClient.get(bufferKey);
 
       await redisClient.del(bufferKey);
-
-      BotService.timers.delete(waId);
 
       if (!fullMessage) return;
 
@@ -60,28 +57,29 @@ class BotService {
     }
   }
 
-  async handleMessageIncoming(
+  async handleBufferingMessage(
     whatsappMessageDetails: WhatsAppMessageDetails,
   ): Promise<void> {
-    const { from, text } = whatsappMessageDetails;
-
     try {
-      return await this.handleMessageBuffer(from, text);
-    } catch (error) {
-      logger.error(
-        `[BotService][handleMessageIncoming] Error en el buffering: ${error}`,
+      logger.info(
+        `[BotService][handleBufferingMessage] Iniciando el buffering de mensaje: ${JSON.stringify(whatsappMessageDetails)}`,
       );
+
+      const { from, text } = whatsappMessageDetails;
+      const bufferKey = `buffer:${from}`;
+
+      const currentBuffer = await redisClient.get(bufferKey);
+
+      const newBuffer = currentBuffer ? `${currentBuffer} ${text}` : text;
+
+      logger.info(
+        `[BotService][handleBufferingMessage] Nuevo buffer: ${JSON.stringify(newBuffer)}`,
+      );
+
+      await redisClient.set(bufferKey, newBuffer, { EX: 60 });
+    } catch (error) {
+      logger.error(`[BotService][handle] Error en el buffering: ${error}`);
     }
-  }
-
-  private async handleMessageBuffer(from: string, text: string) {
-    const bufferKey = `buffer:${from}`;
-
-    const currentBuffer = await redisClient.get(bufferKey);
-
-    const newBuffer = currentBuffer ? `${currentBuffer} ${text}` : text;
-
-    await redisClient.set(bufferKey, newBuffer, { EX: 60 });
   }
 
   private async handleMessageResponse(
@@ -148,4 +146,7 @@ class BotService {
   }
 }
 
-export default BotService;
+export { BotService };
+// ... lo más importante es exportar una INSTANCIA ÚNICA
+const botService = new BotService();
+export default botService;

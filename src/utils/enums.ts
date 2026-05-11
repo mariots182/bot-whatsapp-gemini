@@ -20,4 +20,5 @@ export enum Language {
 
 export enum Queues {
   MESSAGES = "messages",
+  BURSTS = "bursts",
 }

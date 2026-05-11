@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
 import config from "../../config";
 import { WHATSAPP } from "../../utils/consts";
-import BotService from "../../services/bot.service";
 import logger from "../../utils/logger";
+import { messageQueue } from "../../queues/message.queue";
+import { Queues } from "../../utils/enums";
+import botService from "../../services/bot.service";
 
 export const webhookVerifyController = (req: Request, res: Response) => {
   const TOKEN = config.whatsapp.token;
@@ -34,23 +36,30 @@ export const webhookMessageController = async (req: Request, res: Response) => {
   res.sendStatus(200);
 
   try {
-    const botService = new BotService();
-
     const message = (req as any).message;
 
     if (!message) return;
 
     const { messageDetails } = message;
-
+    const { from, phoneNumberId } = messageDetails;
     logger.info(
       `[WebhookController] Detalles del mensaje: ${JSON.stringify(messageDetails)}`,
     );
 
-    return await botService.handleMessageIncoming(messageDetails);
-  } catch (error) {
-    logger.error(
-      `[BotController] Error en el mensaje: ${JSON.stringify(error)}`,
+    const buffer = await botService.handleBufferingMessage(messageDetails);
+
+    logger.info(`[WebhookController] Buffer: ${buffer}`);
+
+    await messageQueue.add(
+      Queues.MESSAGES,
+      {
+        from,
+        phoneNumberId,
+      },
+      { delay: 4000, jobId: `burst-${from}` },
     );
+  } catch (error) {
+    logger.error(`[BotController] Error en el mensaje: ${error}`);
   }
 };
 
@@ -61,22 +70,30 @@ export const webhookMessageTestController = async (
   logger.info(
     `[WebhookController] Received webhook test message: ${JSON.stringify(req.body)}`,
   );
-
   res.sendStatus(200);
 
   try {
-    const botService = new BotService();
-
     const message = (req as any).message;
 
     if (!message) return;
 
     const { messageDetails } = message;
-
-    return await botService.handleMessageIncoming(messageDetails);
-  } catch (error) {
-    logger.error(
-      `[BotController] Error en el mensaje: ${JSON.stringify(error)}`,
+    const { from, phoneNumberId } = messageDetails;
+    logger.info(
+      `[WebhookController] Detalles del mensaje: ${JSON.stringify(messageDetails)}`,
     );
+
+    await botService.handleBufferingMessage(messageDetails);
+
+    await messageQueue.add(
+      Queues.MESSAGES,
+      {
+        from,
+        phoneNumberId,
+      },
+      { delay: 4000, jobId: `debounce-${from}` },
+    );
+  } catch (error) {
+    logger.error(`[BotController] Error en el mensaje: ${error}`);
   }
 };

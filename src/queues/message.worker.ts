@@ -4,14 +4,15 @@ import { Queues } from "../utils/enums";
 import logger from "../utils/logger";
 import { BotHandler } from "./handlers/bot.handler";
 
+const botHandler = new BotHandler();
+
 const worker = new Worker(
   Queues.MESSAGES,
-  async (job: Job) => {
-    logger.info(
-      `[MessageWorker] Procesando job ${job?.id}: ${JSON.stringify(job)}`,
-    );
+  async (job) => {
     const { from, phoneNumberId } = job.data;
-    const botHandler = new BotHandler();
+
+    logger.info(`[MessageWorker] Procesando job ${job?.id} para ${from}`);
+
     const result = await botHandler.process(from, phoneNumberId);
 
     logger.info(
@@ -22,10 +23,29 @@ const worker = new Worker(
     connection: {
       host: config.redis.host,
       port: Number(config.redis.port),
+      password: config.redis.password,
     },
     concurrency: 10,
   },
 );
+
+worker.on("ready", () => {
+  logger.info(
+    `[Worker] Worker de BullMQ está listo y escuchando trabajos de la cola ${Queues.MESSAGES}`,
+  );
+});
+
+worker.on("active", (job) => {
+  logger.info(`[Worker] Job ${job?.id} activo`);
+});
+
+worker.on("completed", (job) => {
+  logger.info(`[Worker] Job ${job?.id} completado`);
+});
+
+worker.on("error", (err) => {
+  logger.error(`[Worker] Error: ${err}`);
+});
 
 worker.on("failed", (job, err) => {
   logger.error(`[Worker] Job ${job?.id} falló: ${err.message}`);
