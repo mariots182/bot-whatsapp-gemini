@@ -6,7 +6,7 @@ import { messageQueue } from "../../queues/message.queue";
 import { Queues } from "../../utils/enums";
 import botService from "../../services/bot.service";
 
-export const webhookVerifyController = (req: Request, res: Response) => {
+export const verifyController = (req: Request, res: Response) => {
   const TOKEN = config.whatsapp.token;
 
   const mode = req.query["hub.mode"];
@@ -28,7 +28,7 @@ export const webhookVerifyController = (req: Request, res: Response) => {
   }
 };
 
-export const webhookMessageController = async (req: Request, res: Response) => {
+export const messageController = async (req: Request, res: Response) => {
   logger.info(
     `[WebhookController] Received webhook message: ${JSON.stringify(req.body)}`,
   );
@@ -41,32 +41,27 @@ export const webhookMessageController = async (req: Request, res: Response) => {
     if (!message) return;
 
     const { messageDetails } = message;
-    const { from, phoneNumberId } = messageDetails;
+    const { whatsappPhone, phoneNumberId } = messageDetails;
     logger.info(
       `[WebhookController] Detalles del mensaje: ${JSON.stringify(messageDetails)}`,
     );
 
-    const buffer = await botService.handleBufferingMessage(messageDetails);
-
-    logger.info(`[WebhookController] Buffer: ${buffer}`);
+    await botService.handleBufferingMessage(messageDetails);
 
     await messageQueue.add(
       Queues.MESSAGES,
       {
-        from,
+        whatsappPhone,
         phoneNumberId,
       },
-      { delay: 4000, jobId: `burst-${from}` },
+      { delay: 4000, jobId: `burst-${whatsappPhone}` },
     );
   } catch (error) {
     logger.error(`[BotController] Error en el mensaje: ${error}`);
   }
 };
 
-export const webhookMessageTestController = async (
-  req: Request,
-  res: Response,
-) => {
+export const messageTestController = async (req: Request, res: Response) => {
   logger.info(
     `[WebhookController] Received webhook test message: ${JSON.stringify(req.body)}`,
   );
@@ -78,7 +73,7 @@ export const webhookMessageTestController = async (
     if (!message) return;
 
     const { messageDetails } = message;
-    const { from, phoneNumberId } = messageDetails;
+    const { whatsappPhone, phoneNumberId } = messageDetails;
     logger.info(
       `[WebhookController] Detalles del mensaje: ${JSON.stringify(messageDetails)}`,
     );
@@ -88,10 +83,10 @@ export const webhookMessageTestController = async (
     await messageQueue.add(
       Queues.MESSAGES,
       {
-        from,
+        whatsappPhone,
         phoneNumberId,
       },
-      { delay: 4000, jobId: `debounce-${from}` },
+      { delay: 4000, jobId: `debounce-${whatsappPhone}` },
     );
   } catch (error) {
     logger.error(`[BotController] Error en el mensaje: ${error}`);

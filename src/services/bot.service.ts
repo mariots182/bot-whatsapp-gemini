@@ -24,8 +24,8 @@ class BotService {
     this.geminiService = new GeminiService();
   }
 
-  async executeConversation(waId: string, phoneNumberId: string) {
-    const bufferKey = `buffer:${waId}`;
+  async executeConversation(whatsappPhone: string, phoneNumberId: string) {
+    const bufferKey = `buffer:${whatsappPhone}`;
 
     try {
       const fullMessage = await redisClient.get(bufferKey);
@@ -38,22 +38,34 @@ class BotService {
         `[BotService][executeConversation] Procesando ráfaga completa: "${fullMessage}"`,
       );
 
-      const conversation = await this.handleConversation(waId, fullMessage);
+      const geminiResponse = await this.handleConversation(
+        whatsappPhone,
+        fullMessage,
+      );
 
-      const { whatsappAnswer } = conversation;
+      const { whatsappAnswer } = geminiResponse;
 
-      await this.handleMessageResponse(waId, phoneNumberId, whatsappAnswer);
+      await this.handleMessageResponse(
+        whatsappPhone,
+        phoneNumberId,
+        whatsappAnswer,
+      );
     } catch (error) {
       logger.error(
         `[BotService][executeConversation] Error en el flujo principal: ${error}`,
       );
 
-      const errorAnswer = {
+      const errorAnswer: WhatsappAnswer = {
         messageType: MessageType.ERROR,
         principalText: ERROR_MESSAGE,
-        options: {},
+        options: {} as any,
       };
-      await this.handleMessageResponse(waId, phoneNumberId, errorAnswer);
+
+      await this.handleMessageResponse(
+        whatsappPhone,
+        phoneNumberId,
+        errorAnswer,
+      );
     }
   }
 
@@ -65,8 +77,8 @@ class BotService {
         `[BotService][handleBufferingMessage] Iniciando el buffering de mensaje: ${JSON.stringify(whatsappMessageDetails)}`,
       );
 
-      const { from, text } = whatsappMessageDetails;
-      const bufferKey = `buffer:${from}`;
+      const { whatsappPhone, text } = whatsappMessageDetails;
+      const bufferKey = `buffer:${whatsappPhone}`;
 
       const currentBuffer = await redisClient.get(bufferKey);
 
@@ -77,13 +89,15 @@ class BotService {
       );
 
       await redisClient.set(bufferKey, newBuffer, { EX: 60 });
+
+      return;
     } catch (error) {
       logger.error(`[BotService][handle] Error en el buffering: ${error}`);
     }
   }
 
   private async handleMessageResponse(
-    to: string,
+    whatsappPhone: string,
     phoneNumberId: string,
     whatsappAnswer: WhatsappAnswer,
   ): Promise<MessageResponse> {
@@ -96,7 +110,7 @@ class BotService {
     );
 
     const whatsappMessage = {
-      to,
+      whatsappPhone,
       phoneNumberId,
       message,
       interactiveButtonReply: options as InteractiveButtonReply,
@@ -112,7 +126,7 @@ class BotService {
     waId: string,
     userMessage: string,
   ): Promise<GeminiResponse> {
-    const redisKey = `chat:${waId}`;
+    const redisKey = `chatHistoryKey:${waId}`;
 
     const rawHistory = await redisClient.get(redisKey);
 

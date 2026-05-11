@@ -19,12 +19,12 @@ class WhatsappService {
     whatsappMessage: WhatsAppMessage,
     messageType: MessageType,
   ): Promise<any> {
-    const { phoneNumberId, to } = whatsappMessage;
+    const { phoneNumberId, whatsappPhone } = whatsappMessage;
 
     const body = this.handleBodyMessage(whatsappMessage, messageType);
 
     logger.info(
-      `[WhatsappService][sendMessage] Enviando mensaje a ${to} con body: ${body}`,
+      `[WhatsappService][sendMessage] Enviando mensaje a ${whatsappPhone} con body: ${body}`,
     );
 
     const response = await fetch(`${whatsappURL}/${phoneNumberId}/messages`, {
@@ -49,26 +49,26 @@ class WhatsappService {
     }
 
     logger.info(
-      `[WhatsappService][sendMessage] Mensaje enviado exitosamente a ${to} con respuesta: ${JSON.stringify(await response.json())}`,
+      `[WhatsappService][sendMessage] Mensaje enviado exitosamente a ${whatsappPhone} con respuesta: ${JSON.stringify(await response.json())}`,
     );
 
     return response;
   }
 
-  handleBodyMessage = (
+  private handleBodyMessage(
     whatsappMessage: WhatsAppMessage,
     messageType: MessageType,
-  ) => {
+  ) {
     try {
       const {
-        to,
+        whatsappPhone,
         message,
         interactiveButtonReply,
         interactiveListReply,
         interactiveCatalog,
         file,
       } = whatsappMessage;
-      const sendTo = to.slice(0, 2) + to.slice(3);
+      const sendTo = this.formatPhoneNumberForWhatsapp(whatsappPhone);
 
       let body;
 
@@ -122,7 +122,7 @@ class WhatsappService {
                 interactiveButtonReply,
               )}`,
             );
-            return;
+            throw new Error("Información del botón interactivo no válida");
           }
 
           const { headerText, bodyText, footerText, buttons } =
@@ -232,7 +232,10 @@ class WhatsappService {
 
       return body;
     } catch (error) {}
-  };
+  }
+  private formatPhoneNumberForWhatsapp(phoneNumber: string): string {
+    return phoneNumber.slice(0, 2) + phoneNumber.slice(3);
+  }
 }
 
 export default WhatsappService;

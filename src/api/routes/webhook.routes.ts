@@ -1,20 +1,16 @@
 import { Router } from "express";
-import {
-  webhookMessageController,
-  webhookMessageTestController,
-  webhookVerifyController,
-} from "../controllers/webhook.controller";
 import { parseMessageMiddleware } from "../middleware/parseMessage.middleware";
+import {
+  messageController,
+  messageTestController,
+  verifyController,
+} from "../controllers/webhook.controller";
 
 const router = Router();
 
-router.get("/webhook", webhookVerifyController);
-router.post("/webhook", parseMessageMiddleware, webhookMessageController);
+router.get("/webhook", verifyController);
+router.post("/webhook", parseMessageMiddleware, messageController);
 
-router.post(
-  "/webhook/test",
-  parseMessageMiddleware,
-  webhookMessageTestController,
-);
+router.post("/webhook/test", parseMessageMiddleware, messageTestController);
 
 export default router;

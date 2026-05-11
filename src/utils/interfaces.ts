@@ -1,7 +1,7 @@
 import { Language, MessageType } from "./enums";
 
 export interface WhatsAppMessage {
-  to: string;
+  whatsappPhone: string;
   phoneNumberId: string;
   message?: string;
   interactiveButtonReply?: InteractiveButtonReply;
@@ -11,7 +11,7 @@ export interface WhatsAppMessage {
 }
 
 export interface WhatsAppMessageDetails {
-  from: string;
+  whatsappPhone: string;
   text: string;
   phoneNumberId: string;
   displayPhoneNumber: string;
@@ -82,7 +82,7 @@ export interface InteractiveListReply {
 export interface InteractiveCatalog {
   name: string;
   language: {
-    code: Language.MEX;
+    code: Language;
   };
   components: Component[];
 }
@@ -137,7 +137,11 @@ export interface MessageResponse {
 export interface WhatsappAnswer {
   messageType: MessageType;
   principalText: string;
-  options: InteractiveButtonReply | InteractiveListReply | WhatsappDocument;
+  options:
+    | InteractiveButtonReply
+    | InteractiveListReply
+    | InteractiveCatalog
+    | WhatsappDocument;
 }
 
 export interface GeminiResponse {
