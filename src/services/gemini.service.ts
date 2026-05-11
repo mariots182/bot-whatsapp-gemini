@@ -1,5 +1,4 @@
 import fs from "fs";
-import path from "path";
 
 import { Content, GoogleGenAI } from "@google/genai";
 
@@ -13,12 +12,15 @@ const { apiKey, model } = config.google.gemini;
 const ai = new GoogleGenAI({ apiKey });
 
 class GeminiService {
+  private systemInstruction: string;
+
+  constructor() {
+    const promptPath = config.prompts.path;
+    this.systemInstruction = fs.readFileSync(promptPath, "utf-8");
+  }
+
   async sendMessageToGemini(contents: Content[]): Promise<GeminiResponse> {
     try {
-      const promptPath = path.join(__dirname, "../../PROMPT.md");
-
-      const systemInstruction = fs.readFileSync(promptPath, "utf-8");
-
       logger.info(
         `[GeminiService] Enviando mensaje a Gemini con contenido: ${JSON.stringify(
           contents,
@@ -29,7 +31,7 @@ class GeminiService {
         temperature: 0.2,
         maxOutputTokens: 2048,
         responseMimeType: "application/json",
-        systemInstruction,
+        systemInstruction: this.systemInstruction,
       };
 
       const result = await ai.models.generateContent({
