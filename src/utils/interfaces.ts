@@ -19,9 +19,9 @@ export interface WhatsAppMessageDetails {
   timestamp: string;
   wamid: string;
   isValid: boolean;
-  sticker: any;
-  contacts?: any[];
-  interactive?: any;
+  sticker: Record<string, unknown>;
+  contacts?: Record<string, unknown>[];
+  interactive?: Record<string, unknown>;
   typeInteractive?: string;
   buttonReply?: {
     id: string;
@@ -137,11 +137,7 @@ export interface MessageResponse {
 export interface WhatsappAnswer {
   messageType: MessageType;
   principalText: string;
-  options:
-    | InteractiveButtonReply
-    | InteractiveListReply
-    | WhatsappDocument
-    | {};
+  options: InteractiveButtonReply | InteractiveListReply | WhatsappDocument;
 }
 
 export interface GeminiResponse {

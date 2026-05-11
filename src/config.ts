@@ -2,8 +2,6 @@ import path from "path";
 import dotenv from "dotenv";
 import { ENV } from "./utils/consts";
 
-dotenv.config();
-
 const { PRODUCTION } = ENV;
 
 const {

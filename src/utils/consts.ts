@@ -31,7 +31,7 @@ export const HTTP = {
     CONTENT_TYPE: "Content-Type",
     AUTHORIZATION: "Authorization",
   },
-};
+} as const;
 
 export const ERROR_MESSAGE =
   "Hubo un error al procesar tu solicitud. Por favor, intenta nuevamente más tarde.";

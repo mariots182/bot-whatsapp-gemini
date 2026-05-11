@@ -1,12 +1,17 @@
 import express from "express";
 import cors from "cors";
-import routes from "./api/routes/routes";
+import dotenv from "dotenv";
+
 import config from "./config";
 
 import { HTTP } from "./utils/consts";
 import logger from "./utils/logger";
 import { connectRedis } from "./utils/redis";
+import routes from "./api/routes/routes";
+
 import "./queues/message.worker";
+
+dotenv.config();
 
 const { corsOrigin, port } = config.app;
 const {
