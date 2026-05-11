@@ -1,3 +1,4 @@
+import path from "path";
 import dotenv from "dotenv";
 import { ENV } from "./utils/consts";
 
@@ -49,5 +50,16 @@ export default {
     host: REDIS_HOST,
     port: REDIS_PORT,
     password: REDIS_PASSWORD,
+  },
+
+  bullmq: {
+    worker: {
+      maxConcurrency: Number(process.env.BULLMQ_WORKER_MAX_CONCURRENCY) || 10,
+      concurrency: Number(process.env.BULLMQ_WORKER_CONCURRENCY) || 1,
+    },
+  },
+
+  prompts: {
+    path: path.join(__dirname, "../PROMPT.md"),
   },
 };
