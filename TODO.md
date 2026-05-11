@@ -114,7 +114,7 @@ BotService.timers.set(from, timeout);
 import { Queue } from "bullmq";
 import redisClient from "../utils/redis";
 
-export const messageQueue = new Queue("messages", {
+export const messageQueue = new Queue(Queues.MESSAGE, {
   connection: redisClient,
   defaultJobOptions: {
     attempts: 3,
