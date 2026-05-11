@@ -19,7 +19,7 @@ export function extractMessageDetails(body: any): WhatsAppMessageDetails {
   const displayPhoneNumber = `+${metadata?.display_phone_number}`;
 
   const {
-    whatsappPhone,
+    from,
     type,
     timestamp,
     id: wamid,
@@ -37,7 +37,7 @@ export function extractMessageDetails(body: any): WhatsAppMessageDetails {
   } = interactive ?? {};
 
   const messageDetails = {
-    whatsappPhone,
+    from,
     text,
     contacts,
     phoneNumberId,
@@ -62,7 +62,7 @@ export function extractMessageDetails(body: any): WhatsAppMessageDetails {
 }
 
 function isValidMessage(messageDetails: WhatsAppMessageDetails): boolean {
-  const { whatsappPhone, text, displayPhoneNumber, type } = messageDetails;
+  const { from, text, displayPhoneNumber, type } = messageDetails;
 
   if (
     (messageDetails.statuses !== undefined &&
@@ -89,7 +89,7 @@ function isValidMessage(messageDetails: WhatsAppMessageDetails): boolean {
     return true;
   }
 
-  if (!whatsappPhone || !text || !displayPhoneNumber) {
+  if (!from || !text || !displayPhoneNumber) {
     logger.warn("[messagesUtils][isValidMessage] Incomplete payload received");
     return false;
   }

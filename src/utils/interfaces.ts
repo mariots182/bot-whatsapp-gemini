@@ -1,7 +1,7 @@
 import { Language, MessageType } from "./enums";
 
 export interface WhatsAppMessage {
-  whatsappPhone: string;
+  to: string;
   phoneNumberId: string;
   message?: string;
   interactiveButtonReply?: InteractiveButtonReply;
@@ -11,7 +11,7 @@ export interface WhatsAppMessage {
 }
 
 export interface WhatsAppMessageDetails {
-  whatsappPhone: string;
+  from: string;
   text: string;
   phoneNumberId: string;
   displayPhoneNumber: string;

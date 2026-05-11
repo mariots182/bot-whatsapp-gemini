@@ -36,7 +36,7 @@ export const parseMessageMiddleware = async (
     text: messageText,
     buttonReply,
     listReply,
-    whatsappPhone,
+    from,
     phoneNumberId,
     displayPhoneNumber,
   } = messageDetails;
@@ -97,7 +97,7 @@ export const parseMessageMiddleware = async (
   }
 
   (req as any).message = {
-    whatsappPhone,
+    from,
     text,
     phoneNumberId,
     displayPhoneNumber,

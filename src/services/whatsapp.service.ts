@@ -19,12 +19,12 @@ class WhatsappService {
     whatsappMessage: WhatsAppMessage,
     messageType: MessageType,
   ): Promise<any> {
-    const { phoneNumberId, whatsappPhone } = whatsappMessage;
+    const { phoneNumberId, to } = whatsappMessage;
 
     const body = this.handleBodyMessage(whatsappMessage, messageType);
 
     logger.info(
-      `[WhatsappService][sendMessage] Enviando mensaje a ${whatsappPhone} con body: ${body}`,
+      `[WhatsappService][sendMessage] Enviando mensaje a ${to} con body: ${body}`,
     );
 
     const response = await fetch(`${whatsappURL}/${phoneNumberId}/messages`, {
@@ -49,7 +49,7 @@ class WhatsappService {
     }
 
     logger.info(
-      `[WhatsappService][sendMessage] Mensaje enviado exitosamente a ${whatsappPhone} con respuesta: ${JSON.stringify(await response.json())}`,
+      `[WhatsappService][sendMessage] Mensaje enviado exitosamente a ${to} con respuesta: ${JSON.stringify(await response.json())}`,
     );
 
     return response;
@@ -61,14 +61,14 @@ class WhatsappService {
   ) {
     try {
       const {
-        whatsappPhone,
+        to,
         message,
         interactiveButtonReply,
         interactiveListReply,
         interactiveCatalog,
         file,
       } = whatsappMessage;
-      const sendTo = this.formatPhoneNumberForWhatsapp(whatsappPhone);
+      const sendTo = this.formatPhoneNumberForWhatsapp(to);
 
       let body;
 

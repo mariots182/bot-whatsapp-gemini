@@ -41,7 +41,7 @@ export const messageController = async (req: Request, res: Response) => {
     if (!message) return;
 
     const { messageDetails } = message;
-    const { whatsappPhone, phoneNumberId } = messageDetails;
+    const { from, phoneNumberId } = messageDetails;
     logger.info(
       `[WebhookController] Detalles del mensaje: ${JSON.stringify(messageDetails)}`,
     );
@@ -51,10 +51,10 @@ export const messageController = async (req: Request, res: Response) => {
     await messageQueue.add(
       Queues.MESSAGES,
       {
-        whatsappPhone,
+        from,
         phoneNumberId,
       },
-      { delay: 4000, jobId: `burst-${whatsappPhone}` },
+      { delay: 4000, jobId: `burst-${from}` },
     );
   } catch (error) {
     logger.error(`[BotController] Error en el mensaje: ${error}`);
@@ -73,7 +73,7 @@ export const messageTestController = async (req: Request, res: Response) => {
     if (!message) return;
 
     const { messageDetails } = message;
-    const { whatsappPhone, phoneNumberId } = messageDetails;
+    const { from, phoneNumberId } = messageDetails;
     logger.info(
       `[WebhookController] Detalles del mensaje: ${JSON.stringify(messageDetails)}`,
     );
@@ -83,10 +83,10 @@ export const messageTestController = async (req: Request, res: Response) => {
     await messageQueue.add(
       Queues.MESSAGES,
       {
-        whatsappPhone,
+        from,
         phoneNumberId,
       },
-      { delay: 4000, jobId: `debounce-${whatsappPhone}` },
+      { delay: 4000, jobId: `debounce-${from}` },
     );
   } catch (error) {
     logger.error(`[BotController] Error en el mensaje: ${error}`);

@@ -24,8 +24,8 @@ class BotService {
     this.geminiService = new GeminiService();
   }
 
-  async executeConversation(whatsappPhone: string, phoneNumberId: string) {
-    const bufferKey = `buffer:${whatsappPhone}`;
+  async executeConversation(from: string, phoneNumberId: string) {
+    const bufferKey = `buffer:${from}`;
 
     try {
       const fullMessage = await redisClient.get(bufferKey);
@@ -38,18 +38,11 @@ class BotService {
         `[BotService][executeConversation] Procesando ráfaga completa: "${fullMessage}"`,
       );
 
-      const geminiResponse = await this.handleConversation(
-        whatsappPhone,
-        fullMessage,
-      );
+      const geminiResponse = await this.handleConversation(from, fullMessage);
 
       const { whatsappAnswer } = geminiResponse;
 
-      await this.handleMessageResponse(
-        whatsappPhone,
-        phoneNumberId,
-        whatsappAnswer,
-      );
+      await this.handleMessageResponse(from, phoneNumberId, whatsappAnswer);
     } catch (error) {
       logger.error(
         `[BotService][executeConversation] Error en el flujo principal: ${error}`,
@@ -61,11 +54,7 @@ class BotService {
         options: {} as any,
       };
 
-      await this.handleMessageResponse(
-        whatsappPhone,
-        phoneNumberId,
-        errorAnswer,
-      );
+      await this.handleMessageResponse(from, phoneNumberId, errorAnswer);
     }
   }
 
@@ -77,8 +66,8 @@ class BotService {
         `[BotService][handleBufferingMessage] Iniciando el buffering de mensaje: ${JSON.stringify(whatsappMessageDetails)}`,
       );
 
-      const { whatsappPhone, text } = whatsappMessageDetails;
-      const bufferKey = `buffer:${whatsappPhone}`;
+      const { from, text } = whatsappMessageDetails;
+      const bufferKey = `buffer:${from}`;
 
       const currentBuffer = await redisClient.get(bufferKey);
 
@@ -97,7 +86,7 @@ class BotService {
   }
 
   private async handleMessageResponse(
-    whatsappPhone: string,
+    to: string,
     phoneNumberId: string,
     whatsappAnswer: WhatsappAnswer,
   ): Promise<MessageResponse> {
@@ -110,7 +99,7 @@ class BotService {
     );
 
     const whatsappMessage = {
-      whatsappPhone,
+      to,
       phoneNumberId,
       message,
       interactiveButtonReply: options as InteractiveButtonReply,
