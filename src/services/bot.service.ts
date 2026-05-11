@@ -161,6 +161,7 @@ class BotService {
 }
 
 export { BotService };
-// ... lo más importante es exportar una INSTANCIA ÚNICA
+
 const botService = new BotService();
+
 export default botService;
