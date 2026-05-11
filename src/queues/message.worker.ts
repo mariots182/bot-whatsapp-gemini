@@ -5,6 +5,9 @@ import logger from "../utils/logger";
 import { BotHandler } from "./handlers/bot.handler";
 
 const botHandler = new BotHandler();
+const { redis, bullmq } = config;
+const { host, port, password } = redis;
+const { concurrency } = bullmq.worker;
 
 const worker = new Worker(
   Queues.MESSAGES,
@@ -21,11 +24,11 @@ const worker = new Worker(
   },
   {
     connection: {
-      host: config.redis.host,
-      port: Number(config.redis.port),
-      password: config.redis.password,
+      host,
+      port: Number(port),
+      password,
     },
-    concurrency: 10,
+    concurrency,
   },
 );
 
