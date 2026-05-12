@@ -36,18 +36,33 @@ Debes responder **única y exclusivamente** con un objeto JSON válido. No inclu
 
 ```json
 {
-  "headerText": string,
-  "bodyText": string,
-  "footerText": string,
-  "buttons": [
-    {
-      "type": "reply",
-      "reply": {
-        "id": "id_1",
-        "title": "Título Máx 20"
-      }
-    }
-  ]
+  "type": "button",
+  "header": {
+    "type": "text",
+    "text": string,
+  },
+  "body": {
+    "text": string,
+  },
+  "footer": {
+    "text": string,
+  },
+  "action": {
+    "button": string,
+    "sections": [
+      {
+        "title": string,
+        "rows": [
+          {
+            "id": string,
+            "title": string,
+            "description": string,
+          },
+        ],
+      },
+    ],
+  },
+}
 }
 ```
 

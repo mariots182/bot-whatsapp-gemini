@@ -116,41 +116,12 @@ class WhatsappService {
             )}`,
           );
 
-          if (!interactiveButtonReply) {
-            logger.error(
-              `[WhatsappService][handleBodyMessage][BUTTONS_REPLY] Información del botón interactivo no válida: ${JSON.stringify(
-                interactiveButtonReply,
-              )}`,
-            );
-            throw new Error("Información del botón interactivo no válida");
-          }
-
-          const { headerText, bodyText, footerText, buttons } =
-            interactiveButtonReply;
-
-          logger.info(
-            `[WhatsappService][handleBodyMessage][BUTTONS_REPLY] headerText: ${headerText}, bodyText: ${bodyText}, footerText: ${footerText}, buttons: ${JSON.stringify(
-              buttons,
-            )}`,
-          );
-
           body = JSON.stringify({
             recipient_type: RECIPIENT_TYPE,
             messaging_product: MESSAGING_PRODUCT,
             to: sendTo,
             type: "interactive",
-            interactive: {
-              type: "button",
-              header: {
-                type: "text",
-                text: headerText,
-              },
-              body: { text: bodyText },
-              footer: { text: footerText },
-              action: {
-                buttons,
-              },
-            },
+            interactive: interactiveButtonReply,
           });
 
           logger.info(
@@ -210,7 +181,6 @@ class WhatsappService {
             messaging_product: MESSAGING_PRODUCT,
             to: sendTo,
             type: "document",
-
             document: file,
           });
 

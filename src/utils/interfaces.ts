@@ -55,10 +55,20 @@ export interface WhatsAppMessageDetails {
 }
 
 export interface InteractiveButtonReply {
-  headerText: string;
-  bodyText: string;
-  footerText: string;
-  buttons: ButtonsReply[];
+  type: "button";
+  header: {
+    type: "text";
+    text: string;
+  };
+  body: {
+    text: string;
+  };
+  footer: {
+    text: string;
+  };
+  action: {
+    buttons: ButtonsReply[];
+  };
 }
 
 export interface InteractiveListReply {
