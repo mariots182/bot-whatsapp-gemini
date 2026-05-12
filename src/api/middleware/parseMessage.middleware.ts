@@ -58,6 +58,9 @@ export const parseMessageMiddleware = async (
 
     case "interactive":
       text = buttonReply?.title ?? listReply?.title ?? "";
+
+      messageDetails.text = messageDetails.text;
+
       break;
 
     case "location":
@@ -78,7 +81,7 @@ export const parseMessageMiddleware = async (
 
       text = `El usuario ha compartido una ubicación: ${address}`;
 
-      messageDetails.text = text;
+      messageDetails.text = messageDetails.text;
 
       break;
 
