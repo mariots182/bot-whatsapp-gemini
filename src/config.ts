@@ -8,6 +8,7 @@ const {
   PORT,
   CORS_ORIGIN_PROD,
   CORS_ORIGIN_LOCAL,
+  ALLOWED_NUMBERS,
   WHATSAPP_TOKEN,
   WHATSAPP_API_URL,
   WHATSAPP_API_VERSION,
@@ -25,6 +26,7 @@ export default {
     env: NODE_ENV,
     port: PORT,
     corsOrigin: NODE_ENV === PRODUCTION ? CORS_ORIGIN_PROD : CORS_ORIGIN_LOCAL,
+    allowedNumbers: ALLOWED_NUMBERS?.split(","),
   },
 
   logger: {

@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { handleGeocodingAddress } from "../../utils/messages/messageGeocoding";
 import { extractMessageDetails } from "../../utils/messages/messageDetails";
 import logger from "../../utils/logger";
+import config from "../../config";
 
 export const parseMessageMiddleware = async (
   req: Request,
@@ -46,6 +47,10 @@ export const parseMessageMiddleware = async (
   } = messageDetails;
 
   let text: string | null = null;
+
+  if (!config.app.allowedNumbers!.includes(from)) {
+    return res.sendStatus(200);
+  }
 
   if (!messageDetails.isValid) {
     return res.sendStatus(200);
