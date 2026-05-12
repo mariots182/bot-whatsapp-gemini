@@ -157,11 +157,10 @@ class WhatsappService {
             )}`,
           );
           body = JSON.stringify({
-            recipient_type: RECIPIENT_TYPE,
             messaging_product: MESSAGING_PRODUCT,
             to: sendTo,
-            type: "template",
-            template: interactiveCatalog,
+            type: "text",
+            text: { body: "Por el momento no se pueden enviar catálogos." },
           });
 
           logger.info(
