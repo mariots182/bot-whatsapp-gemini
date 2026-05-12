@@ -1,5 +1,6 @@
 import winston from "winston";
 import path from "path";
+import config from "../config";
 
 const levels = {
   error: 0,
@@ -19,33 +20,33 @@ const colors = {
 
 winston.addColors(colors);
 
-const format = winston.format.combine(
-  winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss:ms" }),
+const consoleFormat = winston.format.combine(
   winston.format.colorize({ all: true }),
-  winston.format.printf(
-    (info) => `${info.timestamp} ${info.level}: ${info.message}`,
-  ),
+  winston.format.timestamp({
+    format: "YYYY-MM-DD HH:mm:ss",
+  }),
+  winston.format.printf(({ timestamp, level, message }) => {
+    return `${timestamp} ${level}: ${message}`;
+  }),
 );
 
-const transports = [
-  // Console output
-  new winston.transports.Console(),
-  // Error logs
-  new winston.transports.File({
-    filename: path.join("logs", "error.log"),
-    level: "error",
-  }),
-  // All logs
-  new winston.transports.File({
-    filename: path.join("logs", "all.log"),
-  }),
-];
-
 const logger = winston.createLogger({
-  level: process.env.LOG_LEVEL || "debug",
   levels,
-  format,
-  transports,
+  level: config.logger.level,
+  transports: [
+    new winston.transports.Console({
+      format: consoleFormat,
+    }),
+
+    new winston.transports.File({
+      filename: path.join("logs", "error.log"),
+      level: "error",
+    }),
+
+    new winston.transports.File({
+      filename: path.join("logs", "all.log"),
+    }),
+  ],
 });
 
 export default logger;
