@@ -49,10 +49,16 @@ export const parseMessageMiddleware = async (
   let text: string | null = null;
 
   if (!config.app.allowedNumbers!.includes(from)) {
+    logger.warn(
+      `[ParseMessageMiddleware] El número ${from} no está permitido.`,
+    );
     return res.sendStatus(200);
   }
 
   if (!messageDetails.isValid) {
+    logger.warn(
+      `[ParseMessageMiddleware] Algo paso con la estructura del mensaje ${messageDetails} no es válido.`,
+    );
     return res.sendStatus(200);
   }
 

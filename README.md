@@ -131,8 +131,6 @@ La aplicación está preparada y configurada para ser desplegada en **Render** c
 
 # WhatsApp Bot
 
-Boty
-
 ## Demo
 
 [![WhatsApp](https://img.shields.io/badge/WhatsApp-Probar%20Bot-25D366?logo=whatsapp&logoColor=white)](https://wa.me/5212283646071?text=Hola%20quiero%20probar%20el%20bot)
