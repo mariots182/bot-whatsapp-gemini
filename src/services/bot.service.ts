@@ -35,7 +35,7 @@ class BotService {
       if (!fullMessage) return;
 
       logger.info(
-        `[BotService][executeConversation] Procesando ráfaga completa: "${fullMessage}"`,
+        `[BotService][executeConversation] Complete message to process : ${JSON.stringify(fullMessage)}`,
       );
 
       const geminiResponse = await this.handleConversation(from, fullMessage);
@@ -45,7 +45,7 @@ class BotService {
       await this.handleMessageResponse(from, phoneNumberId, whatsappAnswer);
     } catch (error) {
       logger.error(
-        `[BotService][executeConversation] Error en el flujo principal: ${error}`,
+        `[BotService][executeConversation] Error en el flujo de conversación: ${error}`,
       );
 
       const errorAnswer: WhatsappAnswer = {
@@ -67,9 +67,22 @@ class BotService {
       );
 
       const { from, text } = whatsappMessageDetails;
+
+      logger.info(
+        `[BotService][handleBufferingMessage] From: ${from}, Text: ${text}`,
+      );
+
       const bufferKey = `buffer:${from}`;
 
+      logger.info(
+        `[BotService][handleBufferingMessage] Buffer key: ${bufferKey}`,
+      );
+
       const currentBuffer = await redisClient.get(bufferKey);
+
+      logger.info(
+        `[BotService][handleBufferingMessage] Current buffer: ${JSON.stringify(currentBuffer)}`,
+      );
 
       const newBuffer = currentBuffer ? `${currentBuffer} ${text}` : text;
 

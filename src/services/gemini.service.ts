@@ -22,7 +22,7 @@ class GeminiService {
   async sendMessageToGemini(contents: Content[]): Promise<GeminiResponse> {
     try {
       logger.info(
-        `[GeminiService] Enviando mensaje a Gemini con contenido: ${JSON.stringify(
+        `[GeminiService][sendMessageToGemini] Enviando mensaje a Gemini con contenido: ${JSON.stringify(
           contents,
         )}`,
       );
@@ -41,12 +41,12 @@ class GeminiService {
       });
 
       logger.info(
-        `[GeminiService] Respuesta de Gemini: ${JSON.stringify(result.candidates?.[0]?.content?.parts?.[0]?.text)}`,
+        `[GeminiService][sendMessageToGemini] Respuesta de Gemini: ${JSON.stringify(result.candidates?.[0]?.content?.parts?.[0]?.text)}`,
       );
 
       if (!result.candidates?.[0]?.content?.parts?.[0]?.text) {
         throw new Error(
-          "[geminiClient][sendMessageToGemini] No se obtuvo respuesta válida de la IA",
+          "[GeminiService][sendMessageToGemini] No se obtuvo respuesta válida de la IA",
         );
       }
 

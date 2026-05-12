@@ -78,6 +78,8 @@ export const parseMessageMiddleware = async (
 
       text = `El usuario ha compartido una ubicación: ${address}`;
 
+      messageDetails.text = text;
+
       break;
 
     case "sticker":

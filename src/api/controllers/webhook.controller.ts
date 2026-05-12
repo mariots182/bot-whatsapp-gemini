@@ -40,13 +40,13 @@ export const messageController = async (req: Request, res: Response) => {
 
     if (!message) return;
 
-    const { messageDetails } = message;
-    const { from, phoneNumberId } = messageDetails;
+    // const { messageDetails } = message;
+    const { from, phoneNumberId } = message;
     logger.info(
-      `[WebhookController] Detalles del mensaje: ${JSON.stringify(messageDetails)}`,
+      `[WebhookController] Detalles del mensaje: ${JSON.stringify(message)}`,
     );
 
-    await botService.handleBufferingMessage(messageDetails);
+    await botService.handleBufferingMessage(message);
 
     await messageQueue.add(
       Queues.MESSAGES,
