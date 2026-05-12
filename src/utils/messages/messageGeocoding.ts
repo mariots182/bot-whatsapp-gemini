@@ -9,7 +9,7 @@ export async function handleGeocodingAddress(location: {
   longitude: number;
 }): Promise<string> {
   const { latitude, longitude } = location;
-  const geoUrl = `${geocodingURL}json?latlng=${latitude},${longitude}&key=${apiKey}`;
+  const geoUrl = `${geocodingURL}/json?latlng=${latitude},${longitude}&key=${apiKey}`;
 
   try {
     const response = await fetch(geoUrl);
