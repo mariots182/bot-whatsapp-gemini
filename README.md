@@ -1,6 +1,10 @@
 # Bot WhatsApp Gemini
 
-Un bot de WhatsApp altamente escalable construido con **Node.js**, **Express**, **TypeScript**, **Google Gemini AI** y la **API Cloud de WhatsApp**. Diseñado para manejar altas cargas de tráfico (comprobado para escalar a +10,000 usuarios) gracias a su arquitectura basada en colas asíncronas con **BullMQ** y **Redis**.
+Un bot de WhatsApp altamente escalable construido con **Node.js**, **Express**, **TypeScript**, **Google Gemini AI** y la **API Cloud de WhatsApp**. Diseñado con **BullMQ** y **Redis** para manejar el contexto del chat y alto volumen de mensajes.
+
+## Demo
+
+[![WhatsApp](https://img.shields.io/badge/WhatsApp-Probar%20Bot-25D366?logo=whatsapp&logoColor=white)](https://wa.me/5212283646071?text=Hola%20Boty)
 
 ## Características Principales
 
@@ -22,9 +26,9 @@ Un bot de WhatsApp altamente escalable construido con **Node.js**, **Express**, 
 Antes de instalar y correr este proyecto, asegúrate de tener:
 
 - **Node.js** (v18 o superior)
-- **Redis** instalado y corriendo en tu máquina (o un cluster en la nube como Upstash/Redis Cloud).
+- **Redis** instalado y corriendo en tu máquina o en la nube.
 - **Cuenta de Desarrollador de Meta** configurada con una App de WhatsApp y su Token de acceso.
-- **Google AI Studio / Google Cloud:** Una clave API válida para usar Google Gemini.
+- **Google AI Studio / Google Cloud:** Una clave API válida para usar Google Gemini y un API Key de Google Maps Geocoding.
 
 ## Instalación
 
@@ -46,8 +50,15 @@ Antes de instalar y correr este proyecto, asegúrate de tener:
    ```env
    ENV=DEVELOPMENT
    PORT=3000
+   LOG_LEVEL=debug
+
    CORS_ORIGIN_LOCAL=http://localhost:3000
    CORS_ORIGIN_PROD=https://tu-dominio-produccion.com
+
+   ALLOWED_NUMBERS=5211234567890,5210987654321
+
+   # SERVERS
+   ENV=DEVELOPMENT # PRODUCTION
 
    # WHATSAPP CREDENTIALS
    WHATSAPP_TOKEN=tu_token_de_whatsapp_aqui
@@ -128,9 +139,3 @@ La aplicación está preparada y configurada para ser desplegada en **Render** c
   - `whatsapp.service.ts`: Envío y formateo de mensajes a través de WhatsApp Graph API.
 - `utils/`: Tipos (`interfaces.ts`), Redis client, constantes y configuradores.
 - `app.ts` y `config.ts`: Inicialización y configuración central del sistema.
-
-# WhatsApp Bot
-
-## Demo
-
-[![WhatsApp](https://img.shields.io/badge/WhatsApp-Probar%20Bot-25D366?logo=whatsapp&logoColor=white)](https://wa.me/5212283646071?text=Hola%20Boty)
