@@ -51,7 +51,40 @@ Debes responder **única y exclusivamente** con un objeto JSON válido. No inclu
 }
 ```
 
-3. **CATALOG**
+3. **LIST_INTERACTIVE**
+
+```json
+{
+  "type": "list",
+  "header": {
+    "type": "text",
+    "text": string,
+  },
+  "body": {
+    "text": string,
+  },
+  "footer": {
+    "text": string,
+  },
+  "action": {
+    "button": string,
+    "sections": [
+      {
+        "title": string,
+        "rows": [
+          {
+            "id": string,
+            "title": string,
+            "description": string,
+          },
+        ],
+      },
+    ],
+  },
+}
+```
+
+4. **CATALOG**
 
 ```json
     template: {
@@ -86,7 +119,7 @@ Debes responder **única y exclusivamente** con un objeto JSON válido. No inclu
     },
 ```
 
-4. **FILE**
+5. **FILE**
 
 ```json
   {
