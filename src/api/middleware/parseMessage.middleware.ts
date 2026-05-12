@@ -8,6 +8,10 @@ export const parseMessageMiddleware = async (
   res: Response,
   next: NextFunction,
 ) => {
+  logger.info(
+    `[ParseMessageMiddleware] Received message: ${JSON.stringify(req.body)}`,
+  );
+
   const change = req.body?.entry?.[0]?.changes?.[0]?.value;
 
   if (!change) {
