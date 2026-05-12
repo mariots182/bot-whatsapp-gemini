@@ -220,6 +220,25 @@ class WhatsappService {
 
           break;
 
+        case MessageType.ERROR:
+          logger.info(
+            `[WhatsappService][handleBodyMessage][ERROR] Preparando mensaje de error. message: ${message}`,
+          );
+
+          body = JSON.stringify({
+            recipient_type: RECIPIENT_TYPE,
+            messaging_product: MESSAGING_PRODUCT,
+            to: sendTo,
+            type: "text",
+            text: { body: message },
+          });
+
+          logger.info(
+            `[WhatsappService][handleBodyMessage][ERROR] Mensaje de error preparado: ${body}`,
+          );
+
+          break;
+
         default:
           logger.warn(
             `[WhatsappService][handleBodyMessage] Tipo de mensaje no manejado: ${messageType}. Enviando como texto simple.`,
