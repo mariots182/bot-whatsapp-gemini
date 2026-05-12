@@ -26,6 +26,11 @@ export default {
     port: PORT,
     corsOrigin: NODE_ENV === PRODUCTION ? CORS_ORIGIN_PROD : CORS_ORIGIN_LOCAL,
   },
+
+  logger: {
+    level: process.env.LOG_LEVEL,
+  },
+
   whatsapp: {
     token: WHATSAPP_TOKEN,
     apiUrl: WHATSAPP_API_URL,
