@@ -1,7 +1,32 @@
-node_modules
+# Dependencies
+node_modules/
 
+# Environment
 .env
+.env.*
+!.env.example
 
+# Prisma
+prisma/generated/
+
+# Logs
+logs/
+*.log
+
+# OS
 .DS_Store
 
-logs/
+# IDE
+.vscode/
+
+# Project specific
+plans/
+
+#codex
+docs/
+
+#dist
+dist/
+
+#LLM docs
+llm-docs/
