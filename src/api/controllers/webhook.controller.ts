@@ -40,7 +40,6 @@ export const messageController = async (req: Request, res: Response) => {
 
     if (!message) return;
 
-    // const { messageDetails } = message;
     const { from, phoneNumberId } = message;
     logger.info(
       `[WebhookController] Detalles del mensaje: ${JSON.stringify(message)}`,
