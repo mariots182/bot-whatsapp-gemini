@@ -11,7 +11,7 @@ const { concurrency } = bullmq.worker;
 
 const worker = new Worker(
   Queues.MESSAGES,
-  async (job: Job) => {
+  async (job) => {
     const { from, phoneNumberId } = job.data;
 
     logger.info(`[MessageWorker] Procesando job ${job?.id} para ${from}`);
@@ -38,11 +38,11 @@ worker.on("ready", () => {
   );
 });
 
-worker.on("active", (job: Job) => {
+worker.on("active", (job) => {
   logger.info(`[Worker] Job ${job?.id} activo`);
 });
 
-worker.on("completed", (job: Job) => {
+worker.on("completed", (job) => {
   logger.info(`[Worker] Job ${job?.id} completado`);
 });
 
@@ -50,6 +50,6 @@ worker.on("error", (err: Error) => {
   logger.error(`[Worker] Error: ${err}`);
 });
 
-worker.on("failed", (job: Job, err: Error) => {
+worker.on("failed", (job, err: Error) => {
   logger.error(`[Worker] Job ${job?.id} falló: ${err.message}`);
 });
